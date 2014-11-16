@@ -2,3 +2,5 @@
 build
 *.kdev*
 .cccc
+.cproject
+.project

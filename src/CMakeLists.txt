@@ -30,28 +30,7 @@
 ##**************************************************************************************##
 
 
-cmake_minimum_required(VERSION 2.8)
-
-set(CMAKE_C_COMPILER   "/usr/bin/clang"  )
-set(CMAKE_CXX_COMPILER "/usr/bin/clang++")
-
-
-project(bbq)
-
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake" )
-
-find_package( Eigen3 REQUIRED )
-find_package( Boost  COMPONENTS system filesystem unit_test_framework REQUIRED )
-
-set(CMAKE_C_FLAGS   "-march=native -pipe -Wall -pedantic -g1 -O3 -fpic ")
-set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} -std=c++14")
-
-include_directories( src ${EIGEN3_INCLUDE_DIR} ${Boost_INCLUDE_DIRS} )
-
-add_subdirectory( src )
-add_subdirectory( test )
-add_subdirectory( doxy )
-
-message("-- Using Eigen3 installation: " ${EIGEN3_INCLUDE_DIR})
-message("-- Using build mode: " ${CMAKE_BUILD_TYPE})
-
+add_executable(bbq main.cpp)
+target_link_libraries(bbq ${Boost_FILESYSTEM_LIBRARY} ${Boost_SYSTEM_LIBRARY} )
+set_target_properties( bbq PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin )
+install( TARGETS bbq RUNTIME DESTINATION /usr/local/bin )

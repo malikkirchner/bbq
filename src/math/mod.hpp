@@ -30,30 +30,38 @@
 //**************************************************************************************//
 
 
-#include <iostream>
-#include <field/lattice.hpp>
-#include <field/gaugefield.hpp>
-#include <field/fermionfield.hpp>
-#include <math/spinor.hpp>
-#include <math/sun.hpp>
+#pragma once
 
-/*!**************************************************************************************    
- * @author Malik Kirchner <malik.kirchner@gmx.net>
- * 
- ****************************************************************************************/
-int main ( int argc, char** argv ) {
-    int EXIT_CODE = 0;
+namespace math {
+
+constexpr int mod ( const int idx, const int d ) {
+    const int dm1 = d-1;
+    int aux  = idx;
+        aux &= dm1;
+        aux += d;
+        aux &= dm1;
+    return aux;
+}
     
-    field::Lattice<4> lattice{{{8,8,8,8}}};
+constexpr long mod ( const long idx, const long d ) {
+    const long dm1 = d-1;
+    long aux  = idx;
+         aux &= dm1;
+         aux += d;
+         aux &= dm1;
+    return aux;
+}
+
+constexpr unsigned mod ( const unsigned  idx, const unsigned d ) {
+    unsigned aux  = idx;
+             aux &= d-1;
+    return aux;
+}
+
+constexpr unsigned long mod ( const unsigned long idx, const unsigned long d ) {
+    unsigned long aux  = idx;
+                  aux &= d-1;
+    return aux;
+}
     
-    typedef field::Lattice<4>           lattice_type;
-    typedef math::Spinor<double, 4, 3>  spinor_type;
-    typedef math::SU<double, 3>         gauge_type;
-    typedef field::periodic_fermion_field_traits< spinor_type, lattice_type >   fermion_traits;
-    typedef field::periodic_gauge_field_traits< gauge_type, lattice_type >      gauge_traits;
-    
-    field::FermionField< fermion_traits >   phi(lattice);
-    field::GaugeField< gauge_traits >       U(lattice);
-    
-    return EXIT_CODE;
 }

@@ -30,30 +30,48 @@
 //**************************************************************************************//
 
 
-#include <iostream>
-#include <field/lattice.hpp>
-#include <field/gaugefield.hpp>
-#include <field/fermionfield.hpp>
-#include <math/spinor.hpp>
-#include <math/sun.hpp>
+#pragma once
 
+
+#include <field/basefield.hpp>
+
+namespace field {
+
+
+template< class MatrixType, class LatticeType, field_periodicity Periodicity >
+struct fermion_field_traits : public field_traits< MatrixType, LatticeType, false, Periodicity >{};
+
+template< class MatrixType, class LatticeType >
+struct periodic_fermion_field_traits : public fermion_field_traits< MatrixType, LatticeType, FP_PERIODIC >{};
+
+template< class MatrixType, class LatticeType >
+struct anti_periodic_fermion_field_traits : public fermion_field_traits< MatrixType, LatticeType, FP_ANTI_PERIODIC >{};
+
+template< class MatrixType, class LatticeType >
+struct finite_fermion_field_traits : public fermion_field_traits< MatrixType, LatticeType, FP_FINITE >{};
+    
 /*!**************************************************************************************    
  * @author Malik Kirchner <malik.kirchner@gmx.net>
  * 
- ****************************************************************************************/
-int main ( int argc, char** argv ) {
-    int EXIT_CODE = 0;
+ ****************************************************************************************/    
+template< class Traits >
+class FermionField : public BaseField< Traits > {
+public:
+    typedef BaseField< Traits >          base_type;
+    typedef Traits                       traits;
+    typedef typename traits::matrix_type spinor_type;
+
+private:
     
-    field::Lattice<4> lattice{{{8,8,8,8}}};
+protected:
+        
+public:
     
-    typedef field::Lattice<4>           lattice_type;
-    typedef math::Spinor<double, 4, 3>  spinor_type;
-    typedef math::SU<double, 3>         gauge_type;
-    typedef field::periodic_fermion_field_traits< spinor_type, lattice_type >   fermion_traits;
-    typedef field::periodic_gauge_field_traits< gauge_type, lattice_type >      gauge_traits;
+    FermionField( const typename traits::lattice_type& lattice ) : base_type( lattice ) 
+    {
+        
+    }
     
-    field::FermionField< fermion_traits >   phi(lattice);
-    field::GaugeField< gauge_traits >       U(lattice);
+};
     
-    return EXIT_CODE;
 }

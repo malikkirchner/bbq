@@ -30,30 +30,62 @@
 //**************************************************************************************//
 
 
-#include <iostream>
-#include <field/lattice.hpp>
-#include <field/gaugefield.hpp>
-#include <field/fermionfield.hpp>
-#include <math/spinor.hpp>
-#include <math/sun.hpp>
+#pragma once
 
+#include <type_traits>
+#include <util/memory.hpp>
+
+namespace field {
+    
+enum field_periodicity {
+    FP_PERIODIC = 1,
+    FP_ANTI_PERIODIC = 2,
+    FP_FINITE = 4
+};
+    
+template<class MatrixType, class LatticeType, bool IsLink, field_periodicity Periodicity>
+struct field_traits {
+    typedef MatrixType      matrix_type;
+    typedef LatticeType     lattice_type;
+    typedef std::integral_constant< bool, IsLink >                    is_link;
+    typedef std::integral_constant< field_periodicity, Periodicity >  periodicity;
+};
+    
+        
 /*!**************************************************************************************    
  * @author Malik Kirchner <malik.kirchner@gmx.net>
  * 
  ****************************************************************************************/
-int main ( int argc, char** argv ) {
-    int EXIT_CODE = 0;
+template< class Traits >
+class BaseField {
+public:
+    typedef Traits traits;
     
-    field::Lattice<4> lattice{{{8,8,8,8}}};
+protected:
+    typename traits::matrix_type*  _data;
+    typename traits::lattice_type  _lattice;
+    const long   _dim;
+    const long   _volume;
     
-    typedef field::Lattice<4>           lattice_type;
-    typedef math::Spinor<double, 4, 3>  spinor_type;
-    typedef math::SU<double, 3>         gauge_type;
-    typedef field::periodic_fermion_field_traits< spinor_type, lattice_type >   fermion_traits;
-    typedef field::periodic_gauge_field_traits< gauge_type, lattice_type >      gauge_traits;
+public:    
     
-    field::FermionField< fermion_traits >   phi(lattice);
-    field::GaugeField< gauge_traits >       U(lattice);
+    BaseField( typename traits::lattice_type lattice ) : 
+        _data(NULL), _lattice(lattice),
+        _dim( _lattice.dim() ), _volume( _lattice.volume() )
+    {
+        if ( traits::is_link::value )
+            _data = new typename traits::matrix_type [ _dim*_volume ];
+        else 
+            _data = new typename traits::matrix_type [ _volume ];
+    }
     
-    return EXIT_CODE;
+    virtual ~BaseField() {
+        safe_array_delete( _data );
+    }
+    
+    constexpr long dim()    const noexcept { return _dim; }
+    constexpr long volume() const noexcept { return _volume; }
+    constexpr typename traits::lattice_type const & lattice() const noexcept { return _lattice; }
+};
+    
 }

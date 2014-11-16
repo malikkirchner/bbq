@@ -30,30 +30,92 @@
 //**************************************************************************************//
 
 
-#include <iostream>
-#include <field/lattice.hpp>
-#include <field/gaugefield.hpp>
-#include <field/fermionfield.hpp>
-#include <math/spinor.hpp>
-#include <math/sun.hpp>
+#pragma once
 
+
+#include <math/mod.hpp>
+
+namespace field {
+    
+    
 /*!**************************************************************************************    
  * @author Malik Kirchner <malik.kirchner@gmx.net>
  * 
  ****************************************************************************************/
-int main ( int argc, char** argv ) {
-    int EXIT_CODE = 0;
+template< size_t D, bool fast_mod = true >
+class Lattice {
+public:
     
-    field::Lattice<4> lattice{{{8,8,8,8}}};
+    template< typename T = long >
+    struct Index {
+        typedef T index_type;
+        
+        index_type c[D];
+        constexpr index_type& operator[]( const index_type k ) noexcept { return c[k]; }
+        constexpr index_type const& operator[]( const index_type k ) const noexcept { return c[k]; }
+        
+        Index& operator--() {
+            for ( index_type k = 0; k < D; k++) --c[k];
+            return *this;
+        }
+        
+        Index& operator++() {
+            for ( index_type k = 0; k < D; k++) ++c[k];
+            return *this;
+        }
+        
+        Index( const Index& ) = default;
+        Index( Index&& )      = default;
+        Index& operator = ( const Index& ) = default;
+    };
     
-    typedef field::Lattice<4>           lattice_type;
-    typedef math::Spinor<double, 4, 3>  spinor_type;
-    typedef math::SU<double, 3>         gauge_type;
-    typedef field::periodic_fermion_field_traits< spinor_type, lattice_type >   fermion_traits;
-    typedef field::periodic_gauge_field_traits< gauge_type, lattice_type >      gauge_traits;
+private:
     
-    field::FermionField< fermion_traits >   phi(lattice);
-    field::GaugeField< gauge_traits >       U(lattice);
+    template<typename T>
+    constexpr size_t __volume__( const Index<T>& idx ) const noexcept {
+        size_t res = idx[0];
+        for ( size_t k = 1; k < D; k++ ) res *= idx[k];
+        return res;
+    }
     
-    return EXIT_CODE;
+protected:
+    const Index<size_t>  _dimension;
+    const size_t         _dim;
+    const size_t         _volume;
+    
+public:
+    
+    Lattice( const Index<size_t>& dim ) noexcept : 
+        _dimension(dim), _dim(D), _volume( __volume__(dim) )
+    {
+    }
+    
+    constexpr size_t addr( const Index<size_t>& idx ) const noexcept {
+        size_t res = idx[0];
+        
+        for ( size_t k = 1; k < D; k++ ) {
+            res *= _dimension[k];
+            res += idx[k];
+        }
+
+        return res;
+    }
+    
+    constexpr size_t addr_mod( const Index<long>& idx ) const noexcept {
+        size_t res = math::mod( idx[0], static_cast<long>(_dimension[0]));
+        
+        for ( size_t k = 1; k < D; k++ ) {
+            res *= _dimension[k];
+            res += math::mod( idx[k], static_cast<long>(_dimension[k]) );
+        }
+        
+        return res;
+    }
+    
+    constexpr size_t dim()                       const noexcept { return _dim; }
+    constexpr size_t volume()                    const noexcept { return _volume; }
+    constexpr size_t dimension( const size_t k ) const noexcept { return _dimension[k]; }
+    
+};
+    
 }

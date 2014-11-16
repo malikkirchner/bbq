@@ -30,30 +30,16 @@
 //**************************************************************************************//
 
 
-#include <iostream>
-#include <field/lattice.hpp>
-#include <field/gaugefield.hpp>
-#include <field/fermionfield.hpp>
-#include <math/spinor.hpp>
-#include <math/sun.hpp>
+#pragma once
 
-/*!**************************************************************************************    
- * @author Malik Kirchner <malik.kirchner@gmx.net>
- * 
- ****************************************************************************************/
-int main ( int argc, char** argv ) {
-    int EXIT_CODE = 0;
-    
-    field::Lattice<4> lattice{{{8,8,8,8}}};
-    
-    typedef field::Lattice<4>           lattice_type;
-    typedef math::Spinor<double, 4, 3>  spinor_type;
-    typedef math::SU<double, 3>         gauge_type;
-    typedef field::periodic_fermion_field_traits< spinor_type, lattice_type >   fermion_traits;
-    typedef field::periodic_gauge_field_traits< gauge_type, lattice_type >      gauge_traits;
-    
-    field::FermionField< fermion_traits >   phi(lattice);
-    field::GaugeField< gauge_traits >       U(lattice);
-    
-    return EXIT_CODE;
+template< typename T >
+constexpr void safe_delete( T& ptr ) {
+    if ( ptr ) delete ptr;
+    ptr = NULL;
+}
+
+template< typename T >
+constexpr void safe_array_delete( T& ptr ) {
+    if ( ptr ) delete ptr;
+    ptr = NULL;
 }

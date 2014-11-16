@@ -1,5 +1,5 @@
 ##**************************************************************************************##
-##     Copyright (C) 2014 Malik Kirchner "malik.kirchner@gmx.net"                       ##
+##     AUTHOR: Malik Kirchner "malik.kirchner@gmx.net"                                  ##
 ##                                                                                      ##
 ##     This program is free software: you can redistribute it and/or modify             ##
 ##     it under the terms of the GNU General Public License as published by             ##
@@ -12,7 +12,7 @@
 ##     GNU General Public License for more details.                                     ##
 ##                                                                                      ##
 ##     You should have received a copy of the GNU General Public License                ##
-##     along with this program.  If not, see <http:##www.gnu.org/licenses/>.            ##
+##     along with this program.  If not, see <http://www.gnu.org/licenses/>.            ##
 ##                                                                                      ##
 ##     Dieses Programm ist Freie Software: Sie können es unter den Bedingungen          ##
 ##     der GNU General Public License, wie von der Free Software Foundation,            ##
@@ -25,33 +25,21 @@
 ##     Siehe die GNU General Public License für weitere Details.                        ##
 ##                                                                                      ##
 ##     Sie sollten eine Kopie der GNU General Public License zusammen mit diesem        ##
-##     Programm erhalten haben. Wenn nicht, siehe <http:##www.gnu.org/licenses/>.       ##
+##     Programm erhalten haben. Wenn nicht, siehe <http://www.gnu.org/licenses/>.       ##
 ##                                                                                      ##
 ##**************************************************************************************##
 
 
-cmake_minimum_required(VERSION 2.8)
 
-set(CMAKE_C_COMPILER   "/usr/bin/clang"  )
-set(CMAKE_CXX_COMPILER "/usr/bin/clang++")
+find_package(Doxygen)
 
+if(DOXYGEN_FOUND)
 
-project(bbq)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/doxy.conf ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile @ONLY)
+add_custom_target(doc #ALL
+${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile
+WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/
+COMMENT "Generating API documentation with Doxygen" VERBATIM
+)
 
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake" )
-
-find_package( Eigen3 REQUIRED )
-find_package( Boost  COMPONENTS system filesystem unit_test_framework REQUIRED )
-
-set(CMAKE_C_FLAGS   "-march=native -pipe -Wall -pedantic -g1 -O3 -fpic ")
-set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} -std=c++14")
-
-include_directories( src ${EIGEN3_INCLUDE_DIR} ${Boost_INCLUDE_DIRS} )
-
-add_subdirectory( src )
-add_subdirectory( test )
-add_subdirectory( doxy )
-
-message("-- Using Eigen3 installation: " ${EIGEN3_INCLUDE_DIR})
-message("-- Using build mode: " ${CMAKE_BUILD_TYPE})
-
+endif(DOXYGEN_FOUND)
