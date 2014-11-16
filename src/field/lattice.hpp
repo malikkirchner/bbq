@@ -64,6 +64,18 @@ public:
             return *this;
         }
         
+        Index operator--( int ) {
+			Index< T > res(*this);
+			--(*this);
+			return res;
+		}
+
+        Index operator++( int ) {
+			Index< T > res(*this);
+			++(*this);
+			return res;
+		}
+
         Index( const Index& ) = default;
         Index( Index&& )      = default;
         Index& operator = ( const Index& ) = default;

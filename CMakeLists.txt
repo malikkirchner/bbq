@@ -43,7 +43,7 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake" )
 find_package( Eigen3 REQUIRED )
 find_package( Boost  COMPONENTS system filesystem unit_test_framework REQUIRED )
 
-set(CMAKE_C_FLAGS   "-march=native -pipe -Wall -pedantic -g1 -O3 -fpic ")
+set(CMAKE_C_FLAGS   "-march=native -fomit-frame-pointer -pipe -Wall -pedantic -g1 -O3 -fpic ")
 set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} -std=c++14")
 
 include_directories( src ${EIGEN3_INCLUDE_DIR} ${Boost_INCLUDE_DIRS} )
