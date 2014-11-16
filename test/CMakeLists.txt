@@ -30,30 +30,3 @@
 ##**************************************************************************************##
 
 
-cmake_minimum_required(VERSION 2.8)
-
-set(CMAKE_C_COMPILER   "/usr/bin/clang"  )
-set(CMAKE_CXX_COMPILER "/usr/bin/clang++")
-
-
-project(bbq)
-
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake" )
-
-find_package( Eigen3 REQUIRED )
-
-set(CMAKE_C_FLAGS   "-march=native -pipe -Wall -pedantic -g1 -O2 -fpic ")
-set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} -std=c++14")
-
-include_directories( src ${EIGEN3_INCLUDE_DIR}  )
-
-add_executable(bbq src/main.cpp)
-
-install(TARGETS bbq RUNTIME DESTINATION bin)
-
-
-add_subdirectory( test )
-
-message("Using Eigen3 installation: " ${EIGEN3_INCLUDE_DIR})
-message("Using build mode: " ${CMAKE_BUILD_TYPE})
-

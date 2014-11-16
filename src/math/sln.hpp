@@ -30,17 +30,31 @@
 //**************************************************************************************//
 
 
-#include <iostream>
+#include <complex>
+#include <Eigen/Core>
+
+namespace math {
+    
+    
+/*!**************************************************************************************    
+ * @author Malik Kirchner <malik.kirchner@gmx.net>
+ * 
+ ****************************************************************************************/
+template< typename BT, unsigned N >  
+class SL : public Eigen::Matrix< std::complex<BT>, N, N > {
+public:
+    
+};
 
 
 /*!**************************************************************************************    
  * @author Malik Kirchner <malik.kirchner@gmx.net>
  * 
  ****************************************************************************************/
-int main ( int argc, char** argv ) {
-    int EXIT_CODE = 0;
+template< typename BT, unsigned N >  
+class sl : public Eigen::Matrix< std::complex<BT>, N, N > {
+public:
     
+};
     
-    
-    return EXIT_CODE;
 }

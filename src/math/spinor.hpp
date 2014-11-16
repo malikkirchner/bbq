@@ -30,17 +30,20 @@
 //**************************************************************************************//
 
 
-#include <iostream>
+#include <complex>
+#include <Eigen/Core>
 
+namespace math {
 
+    
 /*!**************************************************************************************    
  * @author Malik Kirchner <malik.kirchner@gmx.net>
  * 
  ****************************************************************************************/
-int main ( int argc, char** argv ) {
-    int EXIT_CODE = 0;
+template< typename BT, unsigned D, unsigned N >  
+class Spinor : public Eigen::Matrix< std::complex<BT>, D, N > {
+public:
     
-    
-    
-    return EXIT_CODE;
+};
+
 }
