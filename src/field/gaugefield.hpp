@@ -1,4 +1,4 @@
-//**************************************************************************************//
+﻿//**************************************************************************************//
 //     Copyright (C) 2014 Malik Kirchner "malik.kirchner@gmx.net"                       //
 //                                                                                      //
 //     This program is free software: you can redistribute it and/or modify             //
@@ -34,6 +34,7 @@
 
 
 #include <field/basefield.hpp>
+#include <math/sufactory.hpp>
 
 namespace field {
 
@@ -49,10 +50,10 @@ struct anti_periodic_gauge_field_traits : public gauge_field_traits< MatrixType,
 
 template< class MatrixType, class LatticeType >
 struct finite_gauge_field_traits : public gauge_field_traits< MatrixType, LatticeType, FP_FINITE >{};
-       
-/*!**************************************************************************************    
+
+/*!**************************************************************************************
  * @author Malik Kirchner <malik.kirchner@gmx.net>
- * 
+ *
  ****************************************************************************************/
 
 template< class Traits >
@@ -63,16 +64,16 @@ public:
     typedef typename traits::matrix_type gauge_type;
 
 private:
-    
-protected:    
+
+protected:
 
 public:
-        
-    GaugeField( const typename traits::lattice_type& lattice ) : base_type( lattice ) 
+
+    GaugeField( const typename traits::lattice_type& lattice ) : base_type( lattice )
     {
-        
+
     }
-    
+
 };
-    
+
 }

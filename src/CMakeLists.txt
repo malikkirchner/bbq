@@ -1,4 +1,4 @@
-##**************************************************************************************##
+﻿##**************************************************************************************##
 ##     Copyright (C) 2014 Malik Kirchner "malik.kirchner@gmx.net"                       ##
 ##                                                                                      ##
 ##     This program is free software: you can redistribute it and/or modify             ##
@@ -30,7 +30,7 @@
 ##**************************************************************************************##
 
 
-add_executable(bbq main.cpp)
-target_link_libraries(bbq ${Boost_FILESYSTEM_LIBRARY} ${Boost_SYSTEM_LIBRARY} )
+add_executable( bbq main.cpp )
+target_link_libraries( bbq ${Boost_FILESYSTEM_LIBRARY} ${Boost_SYSTEM_LIBRARY} )
 set_target_properties( bbq PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin )
 install( TARGETS bbq RUNTIME DESTINATION /usr/local/bin )

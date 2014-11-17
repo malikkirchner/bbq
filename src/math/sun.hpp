@@ -1,4 +1,4 @@
-//**************************************************************************************//
+﻿//**************************************************************************************//
 //     Copyright (C) 2014 Malik Kirchner "malik.kirchner@gmx.net"                       //
 //                                                                                      //
 //     This program is free software: you can redistribute it and/or modify             //
@@ -37,26 +37,70 @@
 
 namespace math {
 
-    
-/*!**************************************************************************************    
+
+/*!**************************************************************************************
  * @author Malik Kirchner <malik.kirchner@gmx.net>
- * 
+ *
  ****************************************************************************************/
-template< typename BT, unsigned N >  
-class SU : public Eigen::Matrix< std::complex<BT>, N, N > {
+template< typename BT, size_t N >
+class SU {
+private:
+    Eigen::Matrix< std::complex<BT>, N, N > data;
+
 public:
-    
+    typedef std::complex<BT>                        body_type;
+    typedef Eigen::Matrix< std::complex<BT>, N, N > matrix_type;
+
+    constexpr SU<BT, N> dagger() {
+        Eigen::MatrixBase< matrix_type >  mb(data);
+        mb.adjointInPlace();
+        return mb;
+    }
+
+    void setZero() { data.setZero(); }
+
+    constexpr body_type& operator()( const size_t m, const size_t n ) noexcept { return data(m,n); }
+    constexpr body_type const & operator()( const size_t m, const size_t n ) const noexcept { return data(m,n); }
 };
 
 
-/*!**************************************************************************************    
+/*!**************************************************************************************
  * @author Malik Kirchner <malik.kirchner@gmx.net>
- * 
+ *
  ****************************************************************************************/
-template< typename BT, unsigned N >  
-class su : public Eigen::Matrix< std::complex<BT>, N, N > {
+template< typename BT, size_t N >
+class su  {
+private:
+    Eigen::Matrix< std::complex<BT>, N, N > data;
+
 public:
-    
+    typedef std::complex<BT>                        body_type;
+    typedef Eigen::Matrix< std::complex<BT>, N, N > matrix_type;
+
+    constexpr su<BT, N> dagger() {
+        Eigen::MatrixBase< matrix_type > mb(data);
+        mb.adjointInPlace();
+        return *this;
+    }
+
+    void setZero() { data.setZero(); }
+
+    constexpr body_type& operator()( const size_t m, const size_t n ) noexcept { return data(m,n); }
+    constexpr body_type const & operator()( const size_t m, const size_t n ) const noexcept { return data(m,n); }
+
+    constexpr BT norm2 () {
+        const Eigen::MatrixBase< matrix_type > mb(data);
+        const matrix_type a = mb*data;
+        return a.trace().real();
+    }
+
+    std::ostream& print( std::ostream& os ) {
+        os << data;
+        return os;
+    }
+
 };
-    
+
+
+
 }

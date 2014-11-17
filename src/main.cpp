@@ -1,4 +1,4 @@
-//**************************************************************************************//
+﻿//**************************************************************************************//
 //     Copyright (C) 2014 Malik Kirchner "malik.kirchner@gmx.net"                       //
 //                                                                                      //
 //     This program is free software: you can redistribute it and/or modify             //
@@ -36,24 +36,32 @@
 #include <field/fermionfield.hpp>
 #include <math/spinor.hpp>
 #include <math/sun.hpp>
+#include <math/sunbase.hpp>
 
-/*!**************************************************************************************    
+/*!**************************************************************************************
  * @author Malik Kirchner <malik.kirchner@gmx.net>
- * 
+ *
  ****************************************************************************************/
 int main ( int argc, char** argv ) {
     int EXIT_CODE = 0;
-    
+
     field::Lattice<4> lattice{{{8,8,8,8}}};
-    
+
     typedef field::Lattice<4>           lattice_type;
     typedef math::Spinor<double, 4, 3>  spinor_type;
     typedef math::SU<double, 3>         gauge_type;
     typedef field::periodic_fermion_field_traits< spinor_type, lattice_type >   fermion_traits;
     typedef field::periodic_gauge_field_traits< gauge_type, lattice_type >      gauge_traits;
-    
+
     field::FermionField< fermion_traits >   phi(lattice);
     field::GaugeField< gauge_traits >       U(lattice);
-    
+
+
+    using namespace math;
+
+    math::suNBase<double,3> sub;
+    for ( size_t k = 0; k < 3*3; k++ )
+        sub.base[k].print(std::cout) << std::endl << std::endl;
+
     return EXIT_CODE;
 }

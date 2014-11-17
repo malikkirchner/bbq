@@ -33,6 +33,7 @@
 #pragma once
 
 
+#include <type_traits>
 #include <math/mod.hpp>
 
 namespace field {
@@ -42,7 +43,7 @@ namespace field {
  * @author Malik Kirchner <malik.kirchner@gmx.net>
  * 
  ****************************************************************************************/
-template< size_t D, bool fast_mod = true >
+template< size_t D, typename fast_mod = std::true_type >
 class Lattice {
 public:
     
@@ -65,16 +66,16 @@ public:
         }
         
         Index operator--( int ) {
-			Index< T > res(*this);
-			--(*this);
-			return res;
-		}
+            Index< T > res(*this);
+            --(*this);
+            return res;
+        }
 
         Index operator++( int ) {
-			Index< T > res(*this);
-			++(*this);
-			return res;
-		}
+            Index< T > res(*this);
+            ++(*this);
+            return res;
+        }
 
         Index( const Index& ) = default;
         Index( Index&& )      = default;
@@ -114,11 +115,26 @@ public:
     }
     
     constexpr size_t addr_mod( const Index<long>& idx ) const noexcept {
-        size_t res = math::mod( idx[0], static_cast<long>(_dimension[0]));
-        
-        for ( size_t k = 1; k < D; k++ ) {
-            res *= _dimension[k];
-            res += math::mod( idx[k], static_cast<long>(_dimension[k]) );
+        size_t res = 0;
+
+        if ( fast_mod::value ) {
+
+            res = math::mod( idx[0], static_cast<long>(_dimension[0]));
+
+            for ( size_t k = 1; k < D; k++ ) {
+                res *= _dimension[k];
+                res += math::mod( idx[k], static_cast<long>(_dimension[k]) );
+            }
+
+        } else {
+
+            res = ((idx[0]%_dimension[0])+_dimension[0])%_dimension[0];
+
+            for ( size_t k = 1; k < D; k++ ) {
+                res *= _dimension[k];
+                res += ((idx[k]%_dimension[k])+_dimension[k])%_dimension[k];
+            }
+
         }
         
         return res;

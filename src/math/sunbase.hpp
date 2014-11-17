@@ -32,31 +32,111 @@
 
 #pragma once
 
-#include <complex>
-#include <Eigen/Core>
+
+#include <math/sun.hpp>
 
 namespace math {
 
 
+
 /*!**************************************************************************************
+ *
+ * @class  suBase
  * @author Malik Kirchner <malik.kirchner@gmx.net>
+ * @brief  Base in su(N)-algebra.
+ *
+ * suBase is a template for a class representing a su(N)-algebra base. It
+ * provides generation of an orthogonal base in su(N), especially the Pauli
+ * matrices for su(2) and the Gell-Mann matrices for su(3). Use suBase to
+ * project arbitrary su(N) elements or create a su(N) element as linear
+ * combination of the orthogonal base.
+ * http://en.wikipedia.org/wiki/Generalizations_of_Pauli_matrices
  *
  ****************************************************************************************/
 template< typename BT, size_t N >
-class SL : public Eigen::Matrix< std::complex<BT>, N, N > {
+class suNBase {
+protected:
+
+    constexpr size_t addr( const size_t m, const size_t n ) const noexcept {
+        return N*m+n;
+    }
+
 public:
-    typedef std::complex<BT> body_type;
+    typedef typename su<BT,N>::body_type body_type;
+
+    BT          traces  [N*N];
+    su<BT,N>    base    [N*N];
+    struct Coefficients { BT c[N*N]; };
+
+    suNBase() {
+        // construct a base in a su(N) (eg. Gell-Mann Matrices for su(3))
+        for (size_t k = 0; k < N; k++) {
+            for (size_t j = 0; j < N; j++) {
+                if ( k < j ) {
+                    base[addr(k,j)].setZero();
+                    base[addr(k,j)](k,j) = body_type(1.0,0.0);
+                    base[addr(k,j)](j,k) = body_type(1.0,0.0);
+                }
+
+                if ( k == j ) {
+                    if ( k == 0 ) {
+                        base[addr(k,j)].setZero();
+                        for ( size_t zz = 0; zz < N; zz++)
+                            base[addr(k,k)](zz,zz) = body_type(1.0,0.0);
+                    } else if ( k > 0 ) {
+                        base[addr(k,j)].setZero();
+                        for ( size_t zz = 0; zz < k; zz++)
+                            base[addr(k,k)](zz,zz) = sqrt(2.0/(BT)(k*(k+1)))*body_type(1.0,0.0);
+                        base[addr(k,k)](k,k)       = sqrt(2.0/(BT)(k*(k+1)))*body_type(-(BT)k,0.0);
+                    }
+                }
+
+                if ( k > j ) {
+                    base[addr(k,j)].setZero();
+                    base[addr(k,j)](k,j) = body_type(0.0,+1.0);
+                    base[addr(k,j)](j,k) = body_type(0.0,-1.0);
+                }
+            }
+        }
+
+        // pre-calc traces of squared base matrices for normalization in project() ...
+        for (size_t k = 0; k<N*N; k++) {
+            traces[k] = base[k].norm2();
+        }
+    }
+
+
+    const Coefficients project(const su< BT, N >& rhs) const {
+        su< BT, N >     buf;
+        Coefficients    coeff;
+        BT              aux     = 1.0;
+
+        for (size_t k = 0; k < N*N; k++) {
+            // multiply
+            buf = rhs*base[k];
+            // trace
+            aux = 2.0/traces[k];
+            coeff.c[k] = 0.0;
+            for (size_t j = 0; j < N; j++)
+                coeff.c[k] += aux*buf(j,j).imag();
+        }
+
+        return coeff;
+    }
+
+    const su< BT, N > span(const Coefficients& rhs) const {
+        su< BT, N > buf;
+        buf.setZero();
+        // span
+        const body_type I = body_type(0.0,5.0);
+        for (size_t k = 0; k < N*N; k++) {
+            buf += I*rhs.c[k]*base[k];
+        }
+        return buf;
+    }
+
 };
 
 
-/*!**************************************************************************************
- * @author Malik Kirchner <malik.kirchner@gmx.net>
- *
- ****************************************************************************************/
-template< typename BT, size_t N >
-class sl : public Eigen::Matrix< std::complex<BT>, N, N > {
-public:
-    typedef std::complex<BT> body_type;
-};
 
 }

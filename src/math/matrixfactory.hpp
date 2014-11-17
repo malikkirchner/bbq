@@ -33,44 +33,16 @@
 #pragma once
 
 
-#include <field/basefield.hpp>
-
-namespace field {
+namespace math {
 
 
-template< class MatrixType, class LatticeType, field_periodicity Periodicity >
-struct fermion_field_traits : public field_traits< MatrixType, LatticeType, false, Periodicity >{};
-
-template< class MatrixType, class LatticeType >
-struct periodic_fermion_field_traits : public fermion_field_traits< MatrixType, LatticeType, FP_PERIODIC >{};
-
-template< class MatrixType, class LatticeType >
-struct anti_periodic_fermion_field_traits : public fermion_field_traits< MatrixType, LatticeType, FP_ANTI_PERIODIC >{};
-
-template< class MatrixType, class LatticeType >
-struct finite_fermion_field_traits : public fermion_field_traits< MatrixType, LatticeType, FP_FINITE >{};
-
-/*!**************************************************************************************
- * @author Malik Kirchner <malik.kirchner@gmx.net>
- *
- ****************************************************************************************/
-template< class Traits >
-class FermionField : public BaseField< Traits > {
-public:
-    typedef BaseField< Traits >          base_type;
-    typedef Traits                       traits;
-    typedef typename traits::matrix_type spinor_type;
-
-private:
-
-protected:
-
+template<class MatrixType>
+class MatrixFactory {
 public:
 
-    FermionField( const typename traits::lattice_type& lattice ) : base_type( lattice )
-    {
-
-    }
+    virtual MatrixType generateRandom() = 0;
+    virtual MatrixType unit() = 0;
+    virtual MatrixType zero() = 0;
 
 };
 

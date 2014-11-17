@@ -33,43 +33,33 @@
 #pragma once
 
 
-#include <field/basefield.hpp>
+#include <math/matrixfactory.hpp>
+#include <math/sun.hpp>
 
-namespace field {
+namespace math {
 
 
-template< class MatrixType, class LatticeType, field_periodicity Periodicity >
-struct fermion_field_traits : public field_traits< MatrixType, LatticeType, false, Periodicity >{};
-
-template< class MatrixType, class LatticeType >
-struct periodic_fermion_field_traits : public fermion_field_traits< MatrixType, LatticeType, FP_PERIODIC >{};
-
-template< class MatrixType, class LatticeType >
-struct anti_periodic_fermion_field_traits : public fermion_field_traits< MatrixType, LatticeType, FP_ANTI_PERIODIC >{};
-
-template< class MatrixType, class LatticeType >
-struct finite_fermion_field_traits : public fermion_field_traits< MatrixType, LatticeType, FP_FINITE >{};
-
-/*!**************************************************************************************
- * @author Malik Kirchner <malik.kirchner@gmx.net>
- *
- ****************************************************************************************/
-template< class Traits >
-class FermionField : public BaseField< Traits > {
-public:
-    typedef BaseField< Traits >          base_type;
-    typedef Traits                       traits;
-    typedef typename traits::matrix_type spinor_type;
-
-private:
-
+template<typename BT, size_t N>
+class SUNFactory : public MatrixFactory< SU<BT, N> > {
 protected:
 
+
 public:
+    typedef SU<BT, N>   matrix_type;
 
-    FermionField( const typename traits::lattice_type& lattice ) : base_type( lattice )
-    {
+    virtual matrix_type generateRandom() noexcept final {
 
+    }
+
+    virtual matrix_type unit() noexcept final {
+        matrix_type res = matrix_type::Identity();
+        return res;
+    }
+
+    virtual matrix_type zero() noexcept final {
+        matrix_type res;
+        res.setZero();
+        return res;
     }
 
 };
