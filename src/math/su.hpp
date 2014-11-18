@@ -80,7 +80,7 @@ public:
     constexpr su<BT, N> dagger() {
         Eigen::MatrixBase< matrix_type > mb(data);
         mb.adjointInPlace();
-        return *this;
+        return su{ data=mb };
     }
 
     void setZero() { data.setZero(); }
@@ -90,8 +90,7 @@ public:
 
     constexpr BT norm2 () {
         const Eigen::MatrixBase< matrix_type > mb(data);
-        const matrix_type a = mb*data;
-        return a.trace().real();
+        return (mb*data).trace().real();
     }
 
     std::ostream& print( std::ostream& os ) {

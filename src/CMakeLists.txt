@@ -30,7 +30,10 @@
 ##**************************************************************************************##
 
 
-add_executable( bbq main.cpp )
+file(GLOB HPP0 "**/*.hpp")
+file(GLOB HPP1 "**/*.h")
+
+add_executable( bbq main.cpp ${HPP0} ${HPP1} )
 target_link_libraries( bbq ${Boost_FILESYSTEM_LIBRARY} ${Boost_SYSTEM_LIBRARY} )
 set_target_properties( bbq PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin )
 install( TARGETS bbq RUNTIME DESTINATION /usr/local/bin )

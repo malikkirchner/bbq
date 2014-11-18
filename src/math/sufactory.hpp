@@ -34,13 +34,13 @@
 
 
 #include <math/matrixfactory.hpp>
-#include <math/sun.hpp>
+#include <math/su.hpp>
 
 namespace math {
 
 
 template<typename BT, size_t N>
-class SUNFactory : public MatrixFactory< SU<BT, N> > {
+class SUFactory : public MatrixFactory< SU<BT, N> > {
 protected:
 
 

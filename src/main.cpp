@@ -35,8 +35,8 @@
 #include <field/gaugefield.hpp>
 #include <field/fermionfield.hpp>
 #include <math/spinor.hpp>
-#include <math/sun.hpp>
-#include <math/sunbase.hpp>
+#include <math/su.hpp>
+#include <math/subase.hpp>
 
 /*!**************************************************************************************
  * @author Malik Kirchner <malik.kirchner@gmx.net>
@@ -59,7 +59,7 @@ int main ( int argc, char** argv ) {
 
     using namespace math;
 
-    math::suNBase<double,3> sub;
+    math::suBase<double,3> sub;
     for ( size_t k = 0; k < 3*3; k++ )
         sub.base[k].print(std::cout) << std::endl << std::endl;
 

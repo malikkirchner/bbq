@@ -33,7 +33,7 @@
 #pragma once
 
 
-#include <math/sun.hpp>
+#include <math/su.hpp>
 
 namespace math {
 
@@ -54,7 +54,7 @@ namespace math {
  *
  ****************************************************************************************/
 template< typename BT, size_t N >
-class suNBase {
+class suBase {
 protected:
 
     constexpr size_t addr( const size_t m, const size_t n ) const noexcept {
@@ -68,7 +68,7 @@ public:
     su<BT,N>    base    [N*N];
     struct Coefficients { BT c[N*N]; };
 
-    suNBase() {
+    suBase() {
         // construct a base in a su(N) (eg. Gell-Mann Matrices for su(3))
         for (size_t k = 0; k < N; k++) {
             for (size_t j = 0; j < N; j++) {
