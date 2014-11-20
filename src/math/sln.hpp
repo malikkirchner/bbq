@@ -41,6 +41,8 @@ namespace math {
 /*!**************************************************************************************
  * @author Malik Kirchner <malik.kirchner@gmx.net>
  *
+ * SL(N) group element in NxN matrix representation.
+ * http://en.wikipedia.org/wiki/Special_linear_group
  ****************************************************************************************/
 template< typename BT, size_t N >
 class SL : public Eigen::Matrix< std::complex<BT>, N, N > {
@@ -52,6 +54,8 @@ public:
 /*!**************************************************************************************
  * @author Malik Kirchner <malik.kirchner@gmx.net>
  *
+ * sl(N) algebra element in NxN matrix representation.
+ * http://en.wikipedia.org/wiki/Special_linear_group
  ****************************************************************************************/
 template< typename BT, size_t N >
 class sl : public Eigen::Matrix< std::complex<BT>, N, N > {

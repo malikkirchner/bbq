@@ -41,6 +41,8 @@ namespace math {
 /*!**************************************************************************************
  * @author Malik Kirchner <malik.kirchner@gmx.net>
  *
+ * SU(N) group element in NxN matrix representation.
+ * http://en.wikipedia.org/wiki/Special_unitary_group
  ****************************************************************************************/
 template< typename BT, size_t N >
 class SU {
@@ -67,6 +69,8 @@ public:
 /*!**************************************************************************************
  * @author Malik Kirchner <malik.kirchner@gmx.net>
  *
+ * su(N) algebra element in NxN matrix representation.
+ * http://en.wikipedia.org/wiki/Special_unitary_group
  ****************************************************************************************/
 template< typename BT, size_t N >
 class su  {

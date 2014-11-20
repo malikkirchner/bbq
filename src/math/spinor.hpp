@@ -41,6 +41,7 @@ namespace math {
 /*!**************************************************************************************    
  * @author Malik Kirchner <malik.kirchner@gmx.net>
  * 
+ * Color charged fermion field representation.
  ****************************************************************************************/
 template< typename BT, unsigned N, unsigned D >
 class Spinor : public Eigen::Matrix< std::complex<BT>, N, D > {
