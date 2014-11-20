@@ -41,8 +41,8 @@ class MatrixFactory {
 public:
 
     virtual MatrixType generateRandom() = 0;
-    virtual MatrixType unit() = 0;
-    virtual MatrixType zero() = 0;
+    virtual MatrixType identity()       = 0;
+    virtual MatrixType zero()           = 0;
 
 };
 

@@ -42,8 +42,8 @@ namespace math {
  * @author Malik Kirchner <malik.kirchner@gmx.net>
  * 
  ****************************************************************************************/
-template< typename BT, unsigned D, unsigned N >  
-class Spinor : public Eigen::Matrix< std::complex<BT>, D, N > {
+template< typename BT, unsigned N, unsigned D >
+class Spinor : public Eigen::Matrix< std::complex<BT>, N, D > {
 public:
     
 };
