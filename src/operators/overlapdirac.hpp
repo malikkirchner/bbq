@@ -32,12 +32,33 @@
 
 #pragma once
 
-#include <operators/operator.hpp>
+#include <operators/wilsondirac.hpp>
 
 namespace operators {
 
+
+template< typename fermion_traits, typename gauge_traits >
 class OverlapDirac : public Operator {
 public:
+    typedef typename Operator< fermion_traits, gauge_traits >::body_type     body_type;
+    typedef typename Operator< fermion_traits, gauge_traits >::scalar_type   scalar_type;
+    typedef typename Operator< fermion_traits, gauge_traits >::fermion_field fermion_field;
+    typedef typename Operator< fermion_traits, gauge_traits >::gauge_field   gauge_field;
+    typedef typename Operator< fermion_traits, gauge_traits >::gauge_field   gauge_field;
+    typedef WilsonDirac< fermion_traits, gauge_traits >                      base_operator;
+
+private:
+    base_operator _baseOperator;
+
+public:
+
+    virtual fermion_field apply( const fermion_field& phi, const gauge_field& U ) const final {
+        fermion_field res( phi );
+
+
+
+        return res;
+    }
 
 };
 

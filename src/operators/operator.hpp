@@ -32,12 +32,22 @@
 
 #pragma once
 
+#include <field/gaugefield.hpp>
+#include <field/fermionfield.hpp>
 
 namespace operators {
 
+
+template< typename fermion_traits, typename gauge_traits >
 class Operator {
 public:
+    typedef typename fermion_traits::matrix_type::body_type     body_type;
+    typedef typename fermion_traits::matrix_type::scalar_type   scalar_type;
+    typedef field::FermionField<fermion_traits>                 fermion_field;
+    typedef field::GaugeField<gauge_traits>                     gauge_field;
+    typedef typename fermion_traits::lattice_type               lattice_type;
 
+    virtual fermion_field apply( const fermion_field& phi, const gauge_field& U ) const = 0;
 };
 
 }

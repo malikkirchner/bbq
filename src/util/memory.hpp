@@ -40,6 +40,6 @@ constexpr void safe_delete( T& ptr ) {
 
 template< typename T >
 constexpr void safe_array_delete( T& ptr ) {
-    if ( ptr ) delete ptr;
+    if ( ptr ) delete [] ptr;
     ptr = NULL;
 }

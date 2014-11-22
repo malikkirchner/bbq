@@ -37,6 +37,7 @@
 #include <math/spinor.hpp>
 #include <math/su.hpp>
 #include <math/subase.hpp>
+#include <operators/wilsondirac.hpp>
 
 /*!**************************************************************************************
  * @author Malik Kirchner <malik.kirchner@gmx.net>
@@ -55,6 +56,9 @@ int main ( int argc, char** argv ) {
 
     field::FermionField< fermion_traits >   phi(lattice);
     field::GaugeField< gauge_traits >       U(lattice);
+    operators::WilsonDirac< fermion_traits, gauge_traits > wilson(lattice);
+
+    phi = wilson.apply( phi, U );
 
 
     using namespace math;

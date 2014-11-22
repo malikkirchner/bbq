@@ -33,7 +33,10 @@
 #pragma once
 
 #include <type_traits>
+#include <cstring>
+#include <cassert>
 #include <util/memory.hpp>
+
 
 namespace field {
     
@@ -59,33 +62,72 @@ struct field_traits {
 template< class Traits >
 class BaseField {
 public:
-    typedef Traits traits;
+    typedef Traits                          traits;
+    typedef typename traits::matrix_type    matrix_type;
+    typedef typename traits::lattice_type   lattice_type;
     
 protected:
-    typename traits::matrix_type*  _data;
-    typename traits::lattice_type  _lattice;
-    const long   _dim;
-    const long   _volume;
+    matrix_type*  _data;
+    lattice_type  _lattice;
+    const long    _dim;
+    const long    _volume;
     
+    void allocate() {
+        const size_t len = traits::is_link::value ? _dim*_volume : _volume;
+        _data = new matrix_type [ len ];
+    }
+
+    void deallocate() {
+        safe_array_delete( _data );
+    }
+
+    void cloneData( typename traits::matrix_type *other ) {
+        const size_t len = traits::is_link::value ? _dim*_volume : _volume;
+        for ( size_t k = 0; k < len; k++ ) _data[k] = other[k];
+    }
+
 public:    
     
-    BaseField( typename traits::lattice_type lattice ) : 
-        _data(NULL), _lattice(lattice),
+    BaseField( lattice_type lattice ) :
+        _data( NULL ), _lattice( lattice ),
         _dim( _lattice.dim() ), _volume( _lattice.volume() )
     {
-        if ( traits::is_link::value )
-            _data = new typename traits::matrix_type [ _dim*_volume ];
-        else 
-            _data = new typename traits::matrix_type [ _volume ];
+        allocate();
     }
     
+    BaseField( const BaseField& other ) :
+        _data( NULL ), _lattice( other._lattice ),
+        _dim( _lattice.dim() ), _volume( _lattice.volume() )
+    {
+        allocate();
+        cloneData( other._data );
+    }
+
+    BaseField& operator = ( const BaseField& other ) {
+        assert( _lattice == other._lattice );
+
+        if ( !_data ) allocate();
+        cloneData( other._data );
+
+        return *this;
+    }
+
+    matrix_type& operator[] ( const size_t k ) noexcept {
+        return _data[k];
+    }
+
+    const matrix_type& operator[] ( const size_t k ) const noexcept {
+        return _data[k];
+    }
+
+
     virtual ~BaseField() {
-        safe_array_delete( _data );
+        deallocate();
     }
     
     constexpr long dim()    const noexcept { return _dim; }
     constexpr long volume() const noexcept { return _volume; }
-    constexpr typename traits::lattice_type const & lattice() const noexcept { return _lattice; }
+    constexpr lattice_type const & lattice() const noexcept { return _lattice; }
 };
     
 }

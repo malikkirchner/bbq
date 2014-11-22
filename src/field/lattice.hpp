@@ -54,32 +54,12 @@ public:
         index_type c[D];
         constexpr index_type& operator[]( const index_type k ) noexcept { return c[k]; }
         constexpr index_type const& operator[]( const index_type k ) const noexcept { return c[k]; }
-        
-        Index& operator--() {
-            for ( index_type k = 0; k < D; k++) --c[k];
-            return *this;
-        }
-        
-        Index& operator++() {
-            for ( index_type k = 0; k < D; k++) ++c[k];
-            return *this;
-        }
-        
-        Index operator--( int ) {
-            Index< T > res(*this);
-            --(*this);
-            return res;
-        }
 
-        Index operator++( int ) {
-            Index< T > res(*this);
-            ++(*this);
-            return res;
-        }
-
+        Index()               = default;
         Index( const Index& ) = default;
         Index( Index&& )      = default;
         Index& operator = ( const Index& ) = default;
+        Index& operator = ( Index&& )      = default;
     };
     
 private:
@@ -101,6 +81,11 @@ public:
     Lattice( const Index<size_t>& dim ) noexcept : 
         _dimension(dim), _dim(D), _volume( __volume__(dim) )
     {
+    }
+
+    constexpr bool operator == ( const Lattice& other ) const noexcept {
+        return ( other._dim    == _dim ) &&
+               ( other._volume == _volume );
     }
     
     constexpr size_t addr( const Index<size_t>& idx ) const noexcept {

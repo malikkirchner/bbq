@@ -46,7 +46,8 @@ namespace math {
 template< typename BT, unsigned N, unsigned D >
 class Spinor : public Eigen::Matrix< std::complex<BT>, N, D > {
 public:
-    
+    typedef std::complex<BT> body_type;
+    typedef BT               scalar_type;
 };
 
 }

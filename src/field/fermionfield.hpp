@@ -57,9 +57,10 @@ struct finite_fermion_field_traits : public fermion_field_traits< MatrixType, La
 template< class Traits >
 class FermionField : public BaseField< Traits > {
 public:
-    typedef BaseField< Traits >          base_type;
-    typedef Traits                       traits;
-    typedef typename traits::matrix_type spinor_type;
+    typedef BaseField< Traits >           base_type;
+    typedef Traits                        traits;
+    typedef typename traits::matrix_type  spinor_type;
+    typedef typename traits::lattice_type lattice_type;
 
 private:
 
@@ -67,9 +68,19 @@ protected:
 
 public:
 
-    FermionField( const typename traits::lattice_type& lattice ) : base_type( lattice )
+    FermionField( const lattice_type& lattice ) : base_type( lattice )
     {
 
+    }
+
+    FermionField( const FermionField& other ) : base_type( other )
+    {
+
+    }
+
+    FermionField& operator = ( const FermionField& other ) {
+        base_type::operator = ( other );
+        return *this;
     }
 
 };

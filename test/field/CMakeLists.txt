@@ -30,6 +30,9 @@
 ##**************************************************************************************##
 
 add_definitions(-DBOOST_TEST_DYN_LINK) 
+# clang fix
+add_definitions( "-D__extern_always_inline=inline" )
+
 
 add_executable( latticetest latticetest.cpp )
 target_link_libraries( latticetest ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY} )

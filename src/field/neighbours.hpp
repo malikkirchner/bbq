@@ -1,4 +1,4 @@
-﻿//**************************************************************************************//
+//**************************************************************************************//
 //     Copyright (C) 2014 Malik Kirchner "malik.kirchner@gmx.net"                       //
 //                                                                                      //
 //     This program is free software: you can redistribute it and/or modify             //
@@ -32,80 +32,94 @@
 
 #pragma once
 
-#include <complex>
-#include <Eigen/Core>
+#include <cstring>
+#include <util/memory.hpp>
+#include <field/basefield.hpp>
 
-namespace math {
+namespace field {
 
+template< class LT, field_periodicity Periodicity >
+class Neighbours {
+public:
 
-/*!**************************************************************************************
- * @author Malik Kirchner <malik.kirchner@gmx.net>
- *
- * SU(N) group element in NxN matrix representation.
- * http://en.wikipedia.org/wiki/Special_unitary_group
- ****************************************************************************************/
-template< typename BT, size_t N >
-class SU {
-private:
-    Eigen::Matrix< std::complex<BT>, N, N > data;
+    struct Entry {
+        size_t fwd;
+        size_t bwd;
+    };
+
+    typedef LT                                          lattice_type;
+    typedef typename lattice_type::template Index<long> index_type;
+
+protected:
+    const lattice_type  _lattice;
+    Entry*              _data;
+    const size_t        _dim;
+    const size_t        _volume;
+
+    inline size_t addr( const index_type& idx, const long d ) const noexcept {
+        return _lattice.addr_mod(idx)*_dim + d;
+    }
+
+    inline size_t addr( const size_t idx, const size_t d ) const noexcept {
+        return idx*_dim + d;
+    }
+
+    void compile() {
+        index_type idx;
+        size_t     mu = 0;
+
+        compile( idx, mu );
+    }
+
+    void compile( index_type& idx, const size_t mu ) {
+
+        if ( mu < _dim ) {
+            const size_t L = _lattice.dimension(mu);
+            for ( idx[mu] = 0; idx[mu] < L; ++idx[mu] ) {
+                compile( idx, mu + 1 );
+            }
+        } else {
+            index_type nb_idx = idx;
+            for ( size_t d = 0; d < _dim; d++ ) {
+                ++nb_idx[d];
+                _data[ addr( idx, d ) ].fwd = _lattice.addr_mod( nb_idx );
+                --nb_idx[d];
+                --nb_idx[d];
+                _data[ addr( idx, d ) ].bwd = _lattice.addr_mod( nb_idx );
+            }
+        }
+
+    }
 
 public:
-    typedef std::complex<BT>                        body_type;
-    typedef BT                                      scalar_type;
-    typedef Eigen::Matrix< std::complex<BT>, N, N > matrix_type;
 
-    constexpr SU<BT, N> dagger() {
-        Eigen::MatrixBase< matrix_type >  mb(data);
-        mb.adjointInPlace();
-        return mb;
+    Neighbours( lattice_type lattice_ ) : _lattice( lattice_ ), _data(NULL), _dim(_lattice.dim()), _volume(_lattice.volume()) {
+        _data = new Entry [ _dim*_volume ];
+        compile();
     }
 
-    void setZero() { data.setZero(); }
+    Neighbours( const Neighbours& other ) : _lattice( other._lattice ), _data(NULL), _dim(_lattice.dim()), _volume(_lattice.volume()) {
+        _data = new Entry [ _dim*_volume ];
+        memcpy( _data, other._data, _dim*_volume*sizeof(Entry) );
+    }
 
-    constexpr body_type& operator()( const size_t m, const size_t n ) noexcept { return data(m,n); }
-    constexpr body_type const & operator()( const size_t m, const size_t n ) const noexcept { return data(m,n); }
+    Neighbours operator = ( const Neighbours& other ) {
+        assert( _lattice == other._lattice );
+        _data = new Entry [ _dim*_volume ];
+        memcpy( _data, other._data, _dim*_volume*sizeof(Entry) );
+    }
+
+    Neighbours( Neighbours&& other ) = default;
+    Neighbours& operator = ( Neighbours&& other ) = default;
+
+    virtual ~Neighbours() {
+        safe_array_delete( _data );
+    }
+
+    const Entry& operator () ( const size_t     k, const size_t d ) const noexcept { return _data[ addr(k,d) ]; }
+    const Entry& operator () ( const index_type k, const size_t d ) const noexcept { return _data[ addr(k,d) ]; }
+
+    lattice_type lattice() const noexcept { return _lattice; }
 };
-
-
-/*!**************************************************************************************
- * @author Malik Kirchner <malik.kirchner@gmx.net>
- *
- * su(N) algebra element in NxN matrix representation.
- * http://en.wikipedia.org/wiki/Special_unitary_group
- ****************************************************************************************/
-template< typename BT, size_t N >
-class su  {
-private:
-    Eigen::Matrix< std::complex<BT>, N, N > data;
-
-public:
-    typedef std::complex<BT>                        body_type;
-    typedef BT                                      scalar_type;
-    typedef Eigen::Matrix< std::complex<BT>, N, N > matrix_type;
-
-    constexpr su<BT, N> dagger() {
-        Eigen::MatrixBase< matrix_type > mb(data);
-        mb.adjointInPlace();
-        return su{ data=mb };
-    }
-
-    void setZero() { data.setZero(); }
-
-    constexpr body_type& operator()( const size_t m, const size_t n ) noexcept { return data(m,n); }
-    constexpr body_type const & operator()( const size_t m, const size_t n ) const noexcept { return data(m,n); }
-
-    constexpr BT norm2 () {
-        const Eigen::MatrixBase< matrix_type > mb(data);
-        return (mb*data).trace().real();
-    }
-
-    std::ostream& print( std::ostream& os ) {
-        os << data;
-        return os;
-    }
-
-};
-
-
 
 }

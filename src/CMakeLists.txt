@@ -33,6 +33,9 @@
 file(GLOB HPP0 "**/*.hpp")
 file(GLOB HPP1 "**/*.h")
 
+# clang fix
+add_definitions( "-D__extern_always_inline=inline" )
+
 add_executable( bbq main.cpp ${HPP0} ${HPP1} )
 target_link_libraries( bbq ${Boost_FILESYSTEM_LIBRARY} ${Boost_SYSTEM_LIBRARY} )
 set_target_properties( bbq PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin )

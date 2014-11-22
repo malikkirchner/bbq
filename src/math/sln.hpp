@@ -47,7 +47,10 @@ namespace math {
 template< typename BT, size_t N >
 class SL : public Eigen::Matrix< std::complex<BT>, N, N > {
 public:
-    typedef std::complex<BT> body_type;
+    typedef std::complex<BT>                        body_type;
+    typedef BT                                      scalar_type;
+    typedef Eigen::Matrix< std::complex<BT>, N, N > matrix_type;
+
 };
 
 
@@ -60,7 +63,10 @@ public:
 template< typename BT, size_t N >
 class sl : public Eigen::Matrix< std::complex<BT>, N, N > {
 public:
-    typedef std::complex<BT> body_type;
+    typedef std::complex<BT>                        body_type;
+    typedef BT                                      scalar_type;
+    typedef Eigen::Matrix< std::complex<BT>, N, N > matrix_type;
+
 };
 
 }
