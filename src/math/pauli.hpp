@@ -1,4 +1,4 @@
-﻿//**************************************************************************************//
+//**************************************************************************************//
 //     Copyright (C) 2014 Malik Kirchner "malik.kirchner@gmx.net"                       //
 //                                                                                      //
 //     This program is free software: you can redistribute it and/or modify             //
@@ -30,45 +30,44 @@
 //**************************************************************************************//
 
 
+#pragma once
+
+#include <complex>
+#include <Eigen/Core>
 #include <iostream>
-#include <field/lattice.hpp>
-#include <field/gaugefield.hpp>
-#include <field/fermionfield.hpp>
-#include <math/spinor.hpp>
-#include <math/su.hpp>
-#include <math/subase.hpp>
-#include <operators/wilsondirac.hpp>
 
-/*!**************************************************************************************
- * @author Malik Kirchner <malik.kirchner@gmx.net>
- *
- ****************************************************************************************/
-int main ( int argc, char** argv ) {
-    int EXIT_CODE = 0;
+namespace math {
 
-    field::Lattice<4> lattice{{{8,8,8,8}}};
+template< typename BT >
+class PauliMatrixGenerator {
+public:
+    typedef std::complex<BT>             body_type;
+    typedef BT                           scalar_type;
+    typedef Eigen::Matrix<body_type,2,2> pauli_type;
 
-    typedef field::Lattice<4>           lattice_type;
-    typedef math::Spinor<double, 4, 3>  spinor_type;
-    typedef math::SU<double, 3>         gauge_type;
-    typedef field::periodic_fermion_field_traits< spinor_type, lattice_type >   fermion_traits;
-    typedef field::periodic_gauge_field_traits< gauge_type, lattice_type >      gauge_traits;
+    //! \return Pauli matrix \f$\sigma_1\f$
+    static pauli_type sigma1() noexcept {
+        pauli_type m;
+        m(0,0) = body_type{0,0}; m(0,1) = body_type{1,0};
+        m(1,0) = body_type{1,0}; m(1,1) = body_type{0,0};
+        return m;
+    }
 
-    field::FermionField< fermion_traits >   phi(lattice);
-    field::GaugeField< gauge_traits >       U(lattice);
-    operators::WilsonDirac< fermion_traits, gauge_traits > wilson(lattice);
+    //! \return Pauli matrix \f$\sigma_2\f$
+    static pauli_type sigma2() noexcept {
+        pauli_type m;
+        m(0,0) = body_type{0,0}; m(0,1) = body_type{0,-1};
+        m(1,0) = body_type{0,1}; m(1,1) = body_type{0, 0};
+        return m;
+    }
 
-    phi = wilson.apply( phi, U );
+    //! \return Pauli matrix \f$\sigma_1\f$
+    static pauli_type sigma3() noexcept {
+        pauli_type m;
+        m(0,0) = body_type{1,0}; m(0,1) = body_type{ 0,0};
+        m(1,0) = body_type{0,0}; m(1,1) = body_type{-1,0};
+        return m;
+    }
+};
 
-    using namespace math;
-
-    math::suBase<double,3> sub;
-    for ( size_t k = 0; k < 3*3; k++ )
-        sub.base[k].print(std::cout) << std::endl << std::endl;
-
-    math::GammaMatrixGenerator<double, 3> gamma;
-
-//    gamma.print();
-
-    return EXIT_CODE;
 }

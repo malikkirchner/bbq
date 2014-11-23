@@ -78,11 +78,6 @@ public:
 
     }
 
-    FermionField& operator = ( const FermionField& other ) {
-        base_type::operator = ( other );
-        return *this;
-    }
-
 };
 
 }

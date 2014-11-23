@@ -52,6 +52,7 @@ struct field_traits {
     typedef LatticeType     lattice_type;
     typedef std::integral_constant< bool, IsLink >                    is_link;
     typedef std::integral_constant< field_periodicity, Periodicity >  periodicity;
+    typedef typename LatticeType::lattice_dim                         lattice_dim;
 };
     
         
@@ -67,10 +68,10 @@ public:
     typedef typename traits::lattice_type   lattice_type;
     
 protected:
-    matrix_type*  _data;
-    lattice_type  _lattice;
-    const long    _dim;
-    const long    _volume;
+    matrix_type*        _data;
+    const lattice_type  _lattice;
+    const size_t        _dim;
+    const size_t        _volume;
     
     void allocate() {
         const size_t len = traits::is_link::value ? _dim*_volume : _volume;

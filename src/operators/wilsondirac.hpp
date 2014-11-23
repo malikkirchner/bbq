@@ -36,6 +36,7 @@
 
 #include <field/neighbours.hpp>
 #include <operators/operator.hpp>
+#include <math/gamma.hpp>
 
 namespace operators {
 
@@ -48,16 +49,18 @@ public:
     typedef typename base_type::fermion_field           fermion_field;
     typedef typename base_type::gauge_field             gauge_field;
     typedef typename base_type::lattice_type            lattice_type;
+    typedef typename fermion_traits::lattice_dim        lattice_dim;
 
 private:
-    lattice_type    _lattice;
+    const lattice_type  _lattice;
 
-    scalar_type     _mass;
-    scalar_type     _r;
+    scalar_type         _mass;
+    scalar_type         _r;
 
+    typedef typename fermion_traits::periodicity                periodicity;
+    const field::Neighbours<lattice_type, periodicity::value>   neighbours;
 
-    typedef typename fermion_traits::periodicity        periodicity;
-    field::Neighbours<lattice_type, periodicity::value> neighbours;
+    math::GammaMatrixGenerator<scalar_type, lattice_dim::value> gamma;
 
 public:
 
@@ -65,7 +68,7 @@ public:
 
     }
 
-    WilsonDirac( scalar_type m_, scalar_type r_ ) : _mass(m_), _r(r_) {
+    WilsonDirac( lattice_type lattice_, scalar_type m_, scalar_type r_ ) : _lattice(lattice_), _mass(m_), _r(r_), neighbours(lattice_) {
 
     }
 
@@ -73,8 +76,8 @@ public:
         assert( phi.lattice() == _lattice );
         assert( phi.lattice() == U.lattice() );
 
-        const size_t        volume  = _lattice.volume();
-        const size_t        dim     = _lattice.dim();
+        const size_t  volume  = _lattice.volume();
+        const size_t  dim     = _lattice.dim();
         fermion_field res( _lattice );
 
         for ( size_t k = 0; k < volume; k++ ) {
@@ -85,6 +88,7 @@ public:
         for ( size_t m = 0; m < volume; m++ ) {
             for ( size_t n = 0; n < volume; n++ ) {
                 for ( size_t mu = 0; mu < dim; mu++ ) {
+
                 }
             }
         }
@@ -97,6 +101,8 @@ public:
 
     void mass( const scalar_type other ) noexcept { _mass = other; }
     void r( const scalar_type other ) noexcept    { _r    = other; }
+
+    lattice_type lattice() const noexcept { return _lattice; }
 };
 
 }

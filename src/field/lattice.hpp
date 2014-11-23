@@ -34,6 +34,7 @@
 
 
 #include <type_traits>
+#include <cassert>
 #include <math/mod.hpp>
 
 namespace field {
@@ -61,6 +62,8 @@ public:
         Index& operator = ( const Index& ) = default;
         Index& operator = ( Index&& )      = default;
     };
+
+    typedef std::integral_constant<size_t, D> lattice_dim;
     
 private:
     
@@ -81,7 +84,14 @@ public:
     Lattice( const Index<size_t>& dim ) noexcept : 
         _dimension(dim), _dim(D), _volume( __volume__(dim) )
     {
+        static_assert( D > 1, "Lattice dimension must be at least two." );
+        assert( _volume > 0 );
     }
+
+    Lattice( const Lattice& ) = default;
+    Lattice( Lattice&& )      = default;
+    Lattice& operator = ( const Lattice& ) = default;
+    Lattice& operator = ( Lattice&& )      = default;
 
     constexpr bool operator == ( const Lattice& other ) const noexcept {
         return ( other._dim    == _dim ) &&
@@ -104,7 +114,7 @@ public:
 
         if ( fast_mod::value ) {
 
-            res = math::mod( idx[0], static_cast<long>(_dimension[0]));
+            res = math::mod( idx[0], static_cast<long>(_dimension[0]) );
 
             for ( size_t k = 1; k < D; k++ ) {
                 res *= _dimension[k];

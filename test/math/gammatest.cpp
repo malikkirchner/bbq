@@ -1,4 +1,4 @@
-﻿//**************************************************************************************//
+//**************************************************************************************//
 //     Copyright (C) 2014 Malik Kirchner "malik.kirchner@gmx.net"                       //
 //                                                                                      //
 //     This program is free software: you can redistribute it and/or modify             //
@@ -30,45 +30,75 @@
 //**************************************************************************************//
 
 
+#define BOOST_TEST_MAIN
+#define BOOST_TEST_MODULE "gamma-test"
+
+#include <boost/test/unit_test.hpp>
 #include <iostream>
-#include <field/lattice.hpp>
-#include <field/gaugefield.hpp>
-#include <field/fermionfield.hpp>
-#include <math/spinor.hpp>
-#include <math/su.hpp>
-#include <math/subase.hpp>
-#include <operators/wilsondirac.hpp>
+#include <math/gamma.hpp>
 
-/*!**************************************************************************************
- * @author Malik Kirchner <malik.kirchner@gmx.net>
- *
- ****************************************************************************************/
-int main ( int argc, char** argv ) {
-    int EXIT_CODE = 0;
+template< typename gamma_type >
+bool checkEta( size_t mu, size_t nu, gamma_type commutator, double tol = 1e-4 ) {
+    bool res = true;
 
-    field::Lattice<4> lattice{{{8,8,8,8}}};
+    for ( size_t i = 0; i < commutator.rows(); ++i )
+        for ( size_t k = 0; k < commutator.cols(); ++k ) {
+            if ( (i != k) || (mu != nu) )
+                res &= fabs(commutator(i,k)) < tol;
+            if ( (i == k) && (mu == nu) )
+                res &= 2.-fabs(commutator(i,k)) < tol;
+        }
 
-    typedef field::Lattice<4>           lattice_type;
-    typedef math::Spinor<double, 4, 3>  spinor_type;
-    typedef math::SU<double, 3>         gauge_type;
-    typedef field::periodic_fermion_field_traits< spinor_type, lattice_type >   fermion_traits;
-    typedef field::periodic_gauge_field_traits< gauge_type, lattice_type >      gauge_traits;
+    return res;
+}
 
-    field::FermionField< fermion_traits >   phi(lattice);
-    field::GaugeField< gauge_traits >       U(lattice);
-    operators::WilsonDirac< fermion_traits, gauge_traits > wilson(lattice);
+template< typename BT, size_t D >
+bool checkChirality( const math::GammaMatrixGenerator< BT, D >& gamma, BT tol = 1e-4 ) {
+    bool res = true;
 
-    phi = wilson.apply( phi, U );
+    typedef typename math::GammaMatrixGenerator< BT, D >::gamma_type   gamma_type;
+    gamma_type ch = pow(std::complex<BT>{0.,1.}, D/2-1)*gamma[0];
 
+    for ( size_t d = 1; d < D; ++d )
+        ch *= gamma[d];
+
+    for ( size_t i = 0; i < ch.rows(); ++i )
+        for ( size_t k = 0; k < ch.cols(); ++k ) {
+            res &= fabs(ch(i,k)-gamma[D](i,k)) < tol;
+        }
+
+    std::cout << "\n--------------------------------------------------\n";
+    std::cout << "chirality matrix\n";
+    std::cout << ch << std::endl;
+
+    return res;
+}
+
+template< typename BT, size_t D >
+void testGamma() {
     using namespace math;
 
-    math::suBase<double,3> sub;
-    for ( size_t k = 0; k < 3*3; k++ )
-        sub.base[k].print(std::cout) << std::endl << std::endl;
+    GammaMatrixGenerator< BT, D >                                gamma;
+    typedef typename GammaMatrixGenerator< BT, D >::gamma_type   gamma_type;
 
-    math::GammaMatrixGenerator<double, 3> gamma;
+    std::cout << "\n";
+    for ( size_t mu = 0; mu < __spinor_dim(D); mu++ )
+    for ( size_t nu = 0; nu < __spinor_dim(D); nu++ ) {
+        const gamma_type com = gamma[mu]*gamma[nu] + gamma[nu]*gamma[mu];
 
-//    gamma.print();
+        std::cout << "\n--------------------------------------------------\n";
+        std::cout << "(mu,nu) = (" << mu << "," << nu << ")\n";
+        std::cout << com << std::endl;
 
-    return EXIT_CODE;
+        BOOST_CHECK_MESSAGE( checkEta( mu, nu, com ), "Euclidean anti-commutation relation is broken." );
+    }
+
+    BOOST_CHECK_MESSAGE( checkChirality( gamma ), "Chirality matrix is invalid." );
 }
+
+BOOST_AUTO_TEST_CASE( GammaTest )
+{
+    testGamma<double, 2>();
+    testGamma<double, 4>();
+}
+

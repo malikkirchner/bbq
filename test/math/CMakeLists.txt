@@ -29,29 +29,14 @@
 ##                                                                                      ##
 ##**************************************************************************************##
 
-
-cmake_minimum_required(VERSION 2.8)
-
-set(CMAKE_C_COMPILER   "/usr/bin/clang"  )
-set(CMAKE_CXX_COMPILER "/usr/bin/clang++")
+add_definitions(-DBOOST_TEST_DYN_LINK) 
+# clang fix
+add_definitions( "-D__extern_always_inline=inline" )
 
 
-project(bbq)
+add_executable( gammatest gammatest.cpp )
+target_link_libraries( gammatest ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY} )
+set_target_properties( gammatest PROPERTIES RUNTIME_OUTPUT_DIRECTORY  ${CMAKE_BINARY_DIR}/test-bin)
 
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake" )
-
-find_package( Eigen3 REQUIRED )
-find_package( Boost  COMPONENTS system filesystem unit_test_framework REQUIRED )
-
-set(CMAKE_C_FLAGS   "-march=native -fomit-frame-pointer -pipe -Wall -pedantic -g2 -O2 -fpic")
-set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} -std=c++14")
-
-include_directories( src ${EIGEN3_INCLUDE_DIR} ${Boost_INCLUDE_DIRS} )
-
-add_subdirectory( src )
-add_subdirectory( test )
-add_subdirectory( doxy )
-
-message("-- Using Eigen3 installation: " ${EIGEN3_INCLUDE_DIR})
-message("-- Using build mode: " ${CMAKE_BUILD_TYPE})
-
+enable_testing()
+add_test( NAME gammatest WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/test-bin COMMAND gammatest )

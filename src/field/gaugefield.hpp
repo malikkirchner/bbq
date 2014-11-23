@@ -80,11 +80,6 @@ public:
 
     }
 
-    GaugeField& operator = ( const GaugeField& other ) {
-        base_type::operator = ( other );
-        return *this;
-    }
-
 };
 
 }

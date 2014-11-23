@@ -34,6 +34,8 @@
 
 #include <complex>
 #include <Eigen/Core>
+#include <math/gamma.hpp>
+
 
 namespace math {
 
@@ -43,8 +45,8 @@ namespace math {
  * 
  * Color charged fermion field representation.
  ****************************************************************************************/
-template< typename BT, unsigned N, unsigned D >
-class Spinor : public Eigen::Matrix< std::complex<BT>, N, D > {
+template< typename BT, unsigned D, unsigned N >
+class Spinor : public Eigen::Matrix< std::complex<BT>, N, __spinor_dim(D) > {
 public:
     typedef std::complex<BT> body_type;
     typedef BT               scalar_type;

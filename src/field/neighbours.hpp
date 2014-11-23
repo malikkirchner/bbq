@@ -51,6 +51,7 @@ public:
     typedef typename lattice_type::template Index<long> index_type;
 
 protected:
+
     const lattice_type  _lattice;
     Entry*              _data;
     const size_t        _dim;
@@ -64,41 +65,47 @@ protected:
         return idx*_dim + d;
     }
 
-    void compile() {
+    void compile() noexcept {
         index_type idx;
         size_t     mu = 0;
 
         compile( idx, mu );
     }
 
-    void compile( index_type& idx, const size_t mu ) {
+    void compile( index_type& idx, const size_t mu ) noexcept {
+        const size_t L = _lattice.dimension(mu);
 
-        if ( mu < _dim ) {
-            const size_t L = _lattice.dimension(mu);
+        if ( mu < _dim - 1 ) {
             for ( idx[mu] = 0; idx[mu] < L; ++idx[mu] ) {
                 compile( idx, mu + 1 );
             }
         } else {
-            index_type nb_idx = idx;
-            for ( size_t d = 0; d < _dim; d++ ) {
-                ++nb_idx[d];
-                _data[ addr( idx, d ) ].fwd = _lattice.addr_mod( nb_idx );
-                --nb_idx[d];
-                --nb_idx[d];
-                _data[ addr( idx, d ) ].bwd = _lattice.addr_mod( nb_idx );
+            for ( idx[mu] = 0; idx[mu] < L; ++idx[mu] ) {
+                index_type nb_idx = idx;
+                for ( size_t d = 0; d < _dim; ++d ) {
+                    ++nb_idx[d];
+                    _data[ addr( idx, d ) ].fwd = _lattice.addr_mod( nb_idx );
+                    nb_idx[d] -= 2;
+                    _data[ addr( idx, d ) ].bwd = _lattice.addr_mod( nb_idx );
+                }
             }
         }
-
     }
 
 public:
 
-    Neighbours( lattice_type lattice_ ) : _lattice( lattice_ ), _data(NULL), _dim(_lattice.dim()), _volume(_lattice.volume()) {
+    Neighbours( lattice_type lattice_ ) :
+        _lattice( lattice_ ), _data(NULL),
+        _dim(_lattice.dim()), _volume(_lattice.volume())
+    {
         _data = new Entry [ _dim*_volume ];
         compile();
     }
 
-    Neighbours( const Neighbours& other ) : _lattice( other._lattice ), _data(NULL), _dim(_lattice.dim()), _volume(_lattice.volume()) {
+    Neighbours( const Neighbours& other ) :
+        _lattice( other._lattice ), _data(NULL),
+        _dim(_lattice.dim()), _volume(_lattice.volume())
+    {
         _data = new Entry [ _dim*_volume ];
         memcpy( _data, other._data, _dim*_volume*sizeof(Entry) );
     }
