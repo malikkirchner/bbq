@@ -33,8 +33,8 @@
 #pragma once
 
 #include <complex>
-#include <Eigen/Core>
 #include <iostream>
+#include <Eigen/Core>
 
 #include <math/pauli.hpp>
 
@@ -64,7 +64,7 @@ struct __gamma {
         const body_type  I{0,1};
 
         const std::vector<prev_gamma_type> prev_gamma = __gamma<BT, DD::value-2>::compile();
-        std::vector<gamma_type> gamma( DD::value + 1 );
+        std::vector<gamma_type> gamma( D + 1 );
 
         const size_t dim      = __spinor_dim(DD::value);
         const size_t prev_dim = __spinor_dim(DD::value-2);
@@ -91,16 +91,20 @@ struct __gamma {
             gamma[DD::value].template block<2,2>(2*i,2*k) = -prev_gamma[DD::value-2](i,k)*sigma1;
         }
 
+        if ( D > DD::value ) {
+            gamma[DD::value] *= body_type{0,1};
+
+            gamma[D] = pow(std::complex<BT>{0.,1.}, D/2-1)*gamma[0];
+            for ( size_t d = 1; d < D; ++d )
+                gamma[D] *= gamma[d];
+        }
+
         gamma.shrink_to_fit();
 
         for ( gamma_type& g : gamma ) {
             for ( size_t m = 0; m < g.rows(); m++ )
                 for ( size_t n = 0; n < g.cols(); n++ )
                     if ( fabs(g(m,n)) < 1e-1 ) g(m,n) = body_type{+0.};
-        }
-
-        for ( gamma_type g : gamma ) {
-            std::cout << g << std::endl << std::endl;
         }
 
         return gamma;
@@ -133,13 +137,10 @@ struct __gamma<BT, 2> {
                     if ( fabs(g(m,n)) < 1e-1 ) g(m,n) = body_type{+0.};
         }
 
-        for ( gamma_type g : gamma ) {
-            std::cout << g << std::endl << std::endl;
-        }
-
         return gamma;
     }
 };
+
 
 
 template< typename BT, size_t D >
@@ -148,7 +149,8 @@ public:
     typedef std::complex<BT>   body_type;
     typedef BT                 scalar_type;
 
-    typedef std::integral_constant<size_t, __spinor_dim(D)>                 spinor_dim;
+    typedef std::integral_constant<size_t, D&1?D+1:D >                      DD;
+    typedef std::integral_constant<size_t, __spinor_dim(DD::value)>         spinor_dim;
     typedef typename PauliMatrixGenerator<BT>::pauli_type                   pauli_type;
     typedef Eigen::Matrix<body_type,spinor_dim::value,spinor_dim::value>    gamma_type;
 

@@ -67,9 +67,18 @@ bool checkChirality( const math::GammaMatrixGenerator< BT, D >& gamma, BT tol = 
             res &= fabs(ch(i,k)-gamma[D](i,k)) < tol;
         }
 
+    const gamma_type unit = 2.*gamma[D]*gamma[D];
+    BOOST_CHECK_MESSAGE( checkEta( D, D, unit ), "Chirality matrix is not self inverse!" );
+
+    for ( size_t d = 0; d < D; ++d ) {
+        const gamma_type com = gamma[d]*ch + ch*gamma[d];
+
+        BOOST_CHECK_MESSAGE( checkEta( D, d, com ), "Chirality matrix does not anti-commute with gamma matrices!" );
+    }
+
     std::cout << "\n--------------------------------------------------\n";
     std::cout << "chirality matrix\n";
-    std::cout << ch << std::endl;
+    std::cout << gamma[D] << std::endl;
 
     return res;
 }
@@ -82,8 +91,8 @@ void testGamma() {
     typedef typename GammaMatrixGenerator< BT, D >::gamma_type   gamma_type;
 
     std::cout << "\n";
-    for ( size_t mu = 0; mu < __spinor_dim(D); mu++ )
-    for ( size_t nu = 0; nu < __spinor_dim(D); nu++ ) {
+    for ( size_t mu = 0; mu < D; mu++ )
+    for ( size_t nu = 0; nu < D; nu++ ) {
         const gamma_type com = gamma[mu]*gamma[nu] + gamma[nu]*gamma[mu];
 
         std::cout << "\n--------------------------------------------------\n";
@@ -100,5 +109,8 @@ BOOST_AUTO_TEST_CASE( GammaTest )
 {
     testGamma<double, 2>();
     testGamma<double, 4>();
+//    testGamma<double, 6>();
+//    testGamma<double, 8>();
+//    testGamma<double, 3>();
 }
 
