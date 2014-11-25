@@ -66,7 +66,7 @@ int main ( int argc, char** argv ) {
     for ( size_t k = 0; k < 3*3; k++ )
         sub.base[k].print(std::cout) << std::endl << std::endl;
 
-    math::GammaMatrixGenerator<double, 3> gamma;
+    math::GammaMatrixGenerator<double, 4> gamma;
 
 //    gamma.print();
 

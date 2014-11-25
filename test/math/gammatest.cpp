@@ -54,6 +54,8 @@ bool checkEta( size_t mu, size_t nu, gamma_type commutator, double tol = 1e-4 ) 
 
 template< typename BT, size_t D >
 bool checkChirality( const math::GammaMatrixGenerator< BT, D >& gamma, BT tol = 1e-4 ) {
+    if ( math::GammaMatrixGenerator< BT, D >::is_odd::value ) return true;
+
     bool res = true;
 
     typedef typename math::GammaMatrixGenerator< BT, D >::gamma_type   gamma_type;
@@ -64,21 +66,26 @@ bool checkChirality( const math::GammaMatrixGenerator< BT, D >& gamma, BT tol = 
 
     for ( size_t i = 0; i < ch.rows(); ++i )
         for ( size_t k = 0; k < ch.cols(); ++k ) {
-            res &= fabs(ch(i,k)-gamma[D](i,k)) < tol;
+            res &= fabs(ch(i,k)-gamma.chiral()(i,k)) < tol;
         }
 
-    const gamma_type unit = 2.*gamma[D]*gamma[D];
+    const gamma_type unit = 2.*gamma.chiral()*gamma.chiral();
     BOOST_CHECK_MESSAGE( checkEta( D, D, unit ), "Chirality matrix is not self inverse!" );
 
     for ( size_t d = 0; d < D; ++d ) {
         const gamma_type com = gamma[d]*ch + ch*gamma[d];
 
-        BOOST_CHECK_MESSAGE( checkEta( D, d, com ), "Chirality matrix does not anti-commute with gamma matrices!" );
+        bool aux = checkEta( D, d, com );
+        BOOST_CHECK_MESSAGE( aux, "Chirality matrix does not anti-commute with gamma matrices!" );
+        if (!aux)
+            std::cout << com << std::endl;
     }
 
     std::cout << "\n--------------------------------------------------\n";
-    std::cout << "chirality matrix\n";
-    std::cout << gamma[D] << std::endl;
+    std::cout << "expected chirality matrix\n";
+    std::cout << ch << std::endl;
+    std::cout << "actual chirality matrix\n";
+    std::cout << gamma.chiral() << std::endl;
 
     return res;
 }
@@ -108,7 +115,12 @@ void testGamma() {
 BOOST_AUTO_TEST_CASE( GammaTest )
 {
     testGamma<double, 2>();
+    testGamma<double, 3>();
     testGamma<double, 4>();
+    testGamma<double, 5>();
+    testGamma<double, 6>();
+
+//    testGamma<double, 4>();
 //    testGamma<double, 6>();
 //    testGamma<double, 8>();
 //    testGamma<double, 3>();
