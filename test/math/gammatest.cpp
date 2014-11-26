@@ -53,6 +53,22 @@ bool checkEta( size_t mu, size_t nu, gamma_type commutator, double tol = 1e-4 ) 
 }
 
 template< typename BT, size_t D >
+bool checkSignature( const math::GammaMatrixGenerator< BT, D >& gamma, BT tol = 1e-4 ) {
+    bool res = true;
+
+    for ( size_t d = 0; d < D; ++d ) {
+        typename math::GammaMatrixGenerator< BT, D >::gamma_type id = gamma[d]*gamma[d];
+        for ( size_t i = 0; i < id.rows(); ++i )
+            for ( size_t k = 0; k < id.cols(); ++k ) {
+                if (i != k) res &= fabs(id(i,k)) < tol;
+                if (i == k) res &= 1.-fabs(id(i,k)) < tol;
+            }
+    }
+
+    return res;
+}
+
+template< typename BT, size_t D >
 bool checkChirality( const math::GammaMatrixGenerator< BT, D >& gamma, BT tol = 1e-4 ) {
     if ( math::GammaMatrixGenerator< BT, D >::is_odd::value ) return true;
 
@@ -110,6 +126,8 @@ void testGamma() {
     }
 
     BOOST_CHECK_MESSAGE( checkChirality( gamma ), "Chirality matrix is invalid." );
+
+    BOOST_CHECK_MESSAGE( checkSignature( gamma ), "Spacetime signature is invalid." );
 }
 
 BOOST_AUTO_TEST_CASE( GammaTest )
