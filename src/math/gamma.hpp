@@ -35,6 +35,7 @@
 #include <complex>
 #include <iostream>
 #include <Eigen/Core>
+#include <Eigen/Sparse>
 
 #include <math/pauli.hpp>
 
@@ -196,14 +197,26 @@ public:
     typedef std::integral_constant<size_t, __spinor_dim(canonic_dim::value)> spinor_dim;
     typedef typename PauliMatrixGenerator<BT>::pauli_type                    pauli_type;
     typedef Eigen::Matrix<body_type,spinor_dim::value,spinor_dim::value>     gamma_type;
+    typedef Eigen::SparseMatrix<body_type>                                   sparse_gamma_type;
 
 private:
-    const std::vector<gamma_type> _gamma;
+    const std::vector<gamma_type>        _gamma;
+    const std::vector<sparse_gamma_type> _gamma_sparse;
+
+    std::vector<sparse_gamma_type> makeSparse( std::vector<gamma_type> in ) {
+        std::vector<sparse_gamma_type> out( in.size() );
+
+        for ( size_t k = 0; k < in.size(); ++k )
+            out[k] = in[k].sparseView(1e-2);
+
+        return out;
+    }
 
 public:
 
     GammaMatrixGenerator() noexcept :
-        _gamma( __gamma<BT, D>::compile() )
+        _gamma( __gamma<BT, D>::compile() ),
+        _gamma_sparse( makeSparse(_gamma) )
     {
 
     }
