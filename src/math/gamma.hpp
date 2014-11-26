@@ -49,65 +49,67 @@ constexpr size_t __spinor_dim( const size_t D ) {
 }
 
 template< typename BT, size_t D >
-struct __gamma {
-    typedef std::integral_constant<size_t, D&1?D-1:D >                                  DD;
+class __gamma {
+private:
+    typedef std::integral_constant<size_t, D&1?D-1:D >                                  canonic_dim;
     typedef std::integral_constant<bool  , static_cast<bool>(D&1)>                      is_odd;
     typedef std::complex<BT>                                                            body_type;
-    typedef std::integral_constant<size_t, __spinor_dim(DD::value)>                     spinor_dim;
-    typedef std::integral_constant<size_t, __spinor_dim(DD::value-(is_odd::value?0:2))> prev_spinor_dim;
+    typedef std::integral_constant<size_t, __spinor_dim(canonic_dim::value)>                     spinor_dim;
+    typedef std::integral_constant<size_t, __spinor_dim(canonic_dim::value-(is_odd::value?0:2))> prev_spinor_dim;
     typedef Eigen::Matrix<body_type, spinor_dim::value     , spinor_dim::value     >    gamma_type;
     typedef Eigen::Matrix<body_type, prev_spinor_dim::value, prev_spinor_dim::value>    prev_gamma_type;
 
     static void fill( std::true_type t, std::vector<gamma_type>& gamma, const std::vector<prev_gamma_type>& prev_gamma ) {
         const body_type  I{0,1};
         gamma.assign( prev_gamma.begin(), prev_gamma.end() );
-        gamma[DD::value] *= body_type{0,1};
+        gamma[canonic_dim::value] *= body_type{0,1};
     }
 
-    static void fill(std::false_type t, std::vector<gamma_type>& gamma, const std::vector<prev_gamma_type>& prev_gamma ) {
+    static void fill( std::false_type t, std::vector<gamma_type>& gamma, const std::vector<prev_gamma_type>& prev_gamma ) {
         const body_type  I{0,1};
         typedef typename PauliMatrixGenerator<BT>::pauli_type pauli_type;
         const pauli_type sigma1 = PauliMatrixGenerator<BT>::sigma1();
         const pauli_type sigma2 = PauliMatrixGenerator<BT>::sigma2();
         const pauli_type sigma3 = PauliMatrixGenerator<BT>::sigma3();
 
-        const size_t dim      = __spinor_dim(DD::value);
-        const size_t prev_dim = __spinor_dim(DD::value-2);
+        const size_t dim      = __spinor_dim(canonic_dim::value);
+        const size_t prev_dim = __spinor_dim(canonic_dim::value-2);
 
-        for ( size_t d = 0; d < DD::value-2; d++) {
+        for ( size_t d = 0; d < canonic_dim::value-2; d++) {
             for ( size_t i = 0; i < prev_dim; ++i )
             for ( size_t k = 0; k < prev_dim; ++k ) {
                 gamma[d].template block<2,2>(2*i,2*k) = prev_gamma[d](i,k)*sigma1;
             }
         }
 
-        gamma[DD::value-2] = gamma_type::Zero();
+        gamma[canonic_dim::value-2] = gamma_type::Zero();
         for ( size_t m = 0; m < dim; m += 2 ) {
-            gamma[DD::value-2].template block<2,2>(m,m) = sigma2;
+            gamma[canonic_dim::value-2].template block<2,2>(m,m) = sigma2;
         }
 
-        gamma[DD::value-1] = gamma_type::Zero();
+        gamma[canonic_dim::value-1] = gamma_type::Zero();
         for ( size_t m = 0; m < dim; m += 2 ) {
-            gamma[DD::value-1].template block<2,2>(m,m) = sigma3;
+            gamma[canonic_dim::value-1].template block<2,2>(m,m) = sigma3;
         }
 
         for ( size_t i = 0; i < prev_dim; i++ )
         for ( size_t k = 0; k < prev_dim; k++ ) {
-            gamma[DD::value].template block<2,2>(2*i,2*k) = -prev_gamma[DD::value-2](i,k)*sigma1;
+            gamma[canonic_dim::value].template block<2,2>(2*i,2*k) = -prev_gamma[canonic_dim::value-2](i,k)*sigma1;
         }
     }
 
+public:
     static std::vector<gamma_type> compile() noexcept {
-        const std::vector<prev_gamma_type> prev_gamma = __gamma<BT, DD::value-(is_odd::value?0:2)>::compile();
-        std::vector<gamma_type> gamma( DD::value + 1 );
+        const std::vector<prev_gamma_type> prev_gamma = __gamma<BT, canonic_dim::value-(is_odd::value?0:2)>::compile();
+        std::vector<gamma_type> gamma( canonic_dim::value + 1 );
 
-        fill( typename is_odd::type(), gamma, prev_gamma);
+        fill( typename is_odd::type(), gamma, prev_gamma );
 
         gamma.shrink_to_fit();
 
         for ( gamma_type& g : gamma ) {
-            for ( size_t m = 0; m < g.rows(); m++ )
-                for ( size_t n = 0; n < g.cols(); n++ )
+            for ( size_t m = 0; m < spinor_dim::value; m++ )
+                for ( size_t n = 0; n < spinor_dim::value; n++ )
                     if ( fabs(g(m,n)) < 1e-1 ) g(m,n) = body_type{+0.};
         }
 
@@ -116,11 +118,15 @@ struct __gamma {
 };
 
 template< typename BT >
-struct __gamma<BT, 3> {
+class __gamma<BT, 3> {
+private:
+    typedef std::integral_constant<size_t, 2 >                              canonic_dim;
+    typedef std::integral_constant<bool  , static_cast<bool>(3&1)>          is_odd;
     typedef std::complex<BT>                                                body_type;
     typedef std::integral_constant<size_t, __spinor_dim(2)>                 spinor_dim;
     typedef Eigen::Matrix<body_type, spinor_dim::value, spinor_dim::value>  gamma_type;
 
+public:
     static std::vector<gamma_type> compile() noexcept {
         typedef typename PauliMatrixGenerator<BT>::pauli_type pauli_type;
         const pauli_type sigma1 = PauliMatrixGenerator<BT>::sigma1();
@@ -146,11 +152,15 @@ struct __gamma<BT, 3> {
 };
 
 template< typename BT >
-struct __gamma<BT, 2> {
+class __gamma<BT, 2> {
+private:
+    typedef std::integral_constant<size_t, 2 >                              canonic_dim;
+    typedef std::integral_constant<bool  , static_cast<bool>(2&1)>          is_ocanonic_dim;
     typedef std::complex<BT>                                                body_type;
     typedef std::integral_constant<size_t, __spinor_dim(2)>                 spinor_dim;
     typedef Eigen::Matrix<body_type, spinor_dim::value, spinor_dim::value>  gamma_type;
 
+public:
     static std::vector<gamma_type> compile() noexcept {
         typedef typename PauliMatrixGenerator<BT>::pauli_type pauli_type;
         const pauli_type sigma1 = PauliMatrixGenerator<BT>::sigma1();
@@ -178,14 +188,14 @@ struct __gamma<BT, 2> {
 template< typename BT, size_t D >
 class GammaMatrixGenerator {
 public:
-    typedef std::complex<BT>   body_type;
-    typedef BT                 scalar_type;
+    typedef std::complex<BT>                                                 body_type;
+    typedef BT                                                               scalar_type;
 
-    typedef std::integral_constant<size_t, D&1?D-1:D >                      DD;
-    typedef std::integral_constant<bool  , static_cast<bool>(D&1)>          is_odd;
-    typedef std::integral_constant<size_t, __spinor_dim(DD::value)>         spinor_dim;
-    typedef typename PauliMatrixGenerator<BT>::pauli_type                   pauli_type;
-    typedef Eigen::Matrix<body_type,spinor_dim::value,spinor_dim::value>    gamma_type;
+    typedef std::integral_constant<size_t, D&1?D-1:D >                       canonic_dim;
+    typedef std::integral_constant<bool  , static_cast<bool>(D&1)>           is_odd;
+    typedef std::integral_constant<size_t, __spinor_dim(canonic_dim::value)> spinor_dim;
+    typedef typename PauliMatrixGenerator<BT>::pauli_type                    pauli_type;
+    typedef Eigen::Matrix<body_type,spinor_dim::value,spinor_dim::value>     gamma_type;
 
 private:
     const std::vector<gamma_type> _gamma;
@@ -198,12 +208,12 @@ public:
 
     }
 
-    gamma_type operator[]( size_t k ) const {
+    const gamma_type& operator[]( size_t k ) const {
         assert( k < D );
         return _gamma[k];
     }
 
-    gamma_type chiral() const {
+    const gamma_type& chiral() const {
         assert( !is_odd::value );
         return _gamma[D];
     }
