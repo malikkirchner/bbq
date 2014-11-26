@@ -59,13 +59,13 @@ private:
     typedef Eigen::Matrix<body_type, spinor_dim::value     , spinor_dim::value     >    gamma_type;
     typedef Eigen::Matrix<body_type, prev_spinor_dim::value, prev_spinor_dim::value>    prev_gamma_type;
 
-    static void fill( std::true_type t, std::vector<gamma_type>& gamma, const std::vector<prev_gamma_type>& prev_gamma ) {
+    static void fill( const std::true_type t, std::vector<gamma_type>& gamma, const std::vector<prev_gamma_type>& prev_gamma ) {
         const body_type  I{0,1};
         gamma.assign( prev_gamma.begin(), prev_gamma.end() );
         gamma[canonic_dim::value] *= body_type{0,1};
     }
 
-    static void fill( std::false_type t, std::vector<gamma_type>& gamma, const std::vector<prev_gamma_type>& prev_gamma ) {
+    static void fill( const std::false_type t, std::vector<gamma_type>& gamma, const std::vector<prev_gamma_type>& prev_gamma ) {
         const body_type  I{0,1};
         typedef typename PauliMatrixGenerator<BT>::pauli_type pauli_type;
         const pauli_type sigma1 = PauliMatrixGenerator<BT>::sigma1();
@@ -75,7 +75,7 @@ private:
         const size_t dim      = __spinor_dim(canonic_dim::value);
         const size_t prev_dim = __spinor_dim(canonic_dim::value-2);
 
-        for ( size_t d = 0; d < canonic_dim::value-2; d++) {
+        for ( size_t d = 0; d < canonic_dim::value-2; ++d ) {
             for ( size_t i = 0; i < prev_dim; ++i )
             for ( size_t k = 0; k < prev_dim; ++k ) {
                 gamma[d].template block<2,2>(2*i,2*k) = prev_gamma[d](i,k)*sigma1;
@@ -92,8 +92,8 @@ private:
             gamma[canonic_dim::value-1].template block<2,2>(m,m) = sigma3;
         }
 
-        for ( size_t i = 0; i < prev_dim; i++ )
-        for ( size_t k = 0; k < prev_dim; k++ ) {
+        for ( size_t i = 0; i < prev_dim; ++i )
+        for ( size_t k = 0; k < prev_dim; ++k ) {
             gamma[canonic_dim::value].template block<2,2>(2*i,2*k) = -prev_gamma[canonic_dim::value-2](i,k)*sigma1;
         }
     }
@@ -108,8 +108,8 @@ public:
         gamma.shrink_to_fit();
 
         for ( gamma_type& g : gamma ) {
-            for ( size_t m = 0; m < spinor_dim::value; m++ )
-                for ( size_t n = 0; n < spinor_dim::value; n++ )
+            for ( size_t m = 0; m < spinor_dim::value; ++m )
+                for ( size_t n = 0; n < spinor_dim::value; ++n )
                     if ( fabs(g(m,n)) < 1e-1 ) g(m,n) = body_type{+0.};
         }
 
@@ -142,8 +142,8 @@ public:
         gamma.shrink_to_fit();
 
         for ( gamma_type& g : gamma ) {
-            for ( size_t m = 0; m < g.rows(); m++ )
-                for ( size_t n = 0; n < g.cols(); n++ )
+            for ( size_t m = 0; m < spinor_dim::value; ++m )
+                for ( size_t n = 0; n < spinor_dim::value; ++n )
                     if ( fabs(g(m,n)) < 1e-1 ) g(m,n) = body_type{+0.};
         }
 
@@ -176,8 +176,8 @@ public:
         gamma.shrink_to_fit();
 
         for ( gamma_type& g : gamma ) {
-            for ( size_t m = 0; m < g.rows(); m++ )
-                for ( size_t n = 0; n < g.cols(); n++ )
+            for ( size_t m = 0; m < spinor_dim::value; ++m )
+                for ( size_t n = 0; n < spinor_dim::value; ++n )
                     if ( fabs(g(m,n)) < 1e-1 ) g(m,n) = body_type{+0.};
         }
 
@@ -202,18 +202,18 @@ private:
 
 public:
 
-    GammaMatrixGenerator() :
+    GammaMatrixGenerator() noexcept :
         _gamma( __gamma<BT, D>::compile() )
     {
 
     }
 
-    const gamma_type& operator[]( size_t k ) const {
+    const gamma_type& operator[]( const size_t k ) const noexcept {
         assert( k < D );
         return _gamma[k];
     }
 
-    const gamma_type& chiral() const {
+    const gamma_type& chiral() const noexcept {
         assert( !is_odd::value );
         return _gamma[D];
     }

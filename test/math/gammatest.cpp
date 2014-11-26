@@ -137,10 +137,5 @@ BOOST_AUTO_TEST_CASE( GammaTest )
     testGamma<double, 4>();
     testGamma<double, 5>();
     testGamma<double, 6>();
-
-//    testGamma<double, 4>();
-//    testGamma<double, 6>();
-//    testGamma<double, 8>();
-//    testGamma<double, 3>();
 }
 
