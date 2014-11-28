@@ -1,4 +1,21 @@
-﻿//**************************************************************************************//
+﻿/*****************************************************************************************
+==========================================================================================
+                               ____      ____      ___
+                            U | __")u U | __")u   / " \
+                             \|  _ \/  \|  _ \/  | |"| |
+                              | |_) |   | |_) | /| |_| |\
+                              |____/    |____/  U \__\_\u
+                             _|| \\_   _|| \\_     \\//
+                            (__) (__) (__) (__)   (_(__)
+
+
+                               -- The Fermion grill --
+==========================================================================================
+*****************************************************************************************/
+
+
+
+//**************************************************************************************//
 //     Copyright (C) 2014 Malik Kirchner "malik.kirchner@gmx.net"                       //
 //                                                                                      //
 //     This program is free software: you can redistribute it and/or modify             //
@@ -50,9 +67,13 @@ struct anti_periodic_fermion_field_traits : public fermion_field_traits< MatrixT
 template< class MatrixType, class LatticeType >
 struct finite_fermion_field_traits : public fermion_field_traits< MatrixType, LatticeType, FP_FINITE >{};
 
+
+
 /*!**************************************************************************************
+ * @class  FermionField
  * @author Malik Kirchner <malik.kirchner@gmx.net>
  *
+ * @brief  Fermion field over lattice sites.
  ****************************************************************************************/
 template< class Traits >
 class FermionField : public BaseField< Traits > {

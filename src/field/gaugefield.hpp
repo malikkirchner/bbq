@@ -1,4 +1,21 @@
-﻿//**************************************************************************************//
+﻿/*****************************************************************************************
+==========================================================================================
+                               ____      ____      ___
+                            U | __")u U | __")u   / " \
+                             \|  _ \/  \|  _ \/  | |"| |
+                              | |_) |   | |_) | /| |_| |\
+                              |____/    |____/  U \__\_\u
+                             _|| \\_   _|| \\_     \\//
+                            (__) (__) (__) (__)   (_(__)
+
+
+                               -- The Fermion grill --
+==========================================================================================
+*****************************************************************************************/
+
+
+
+//**************************************************************************************//
 //     Copyright (C) 2014 Malik Kirchner "malik.kirchner@gmx.net"                       //
 //                                                                                      //
 //     This program is free software: you can redistribute it and/or modify             //
@@ -51,11 +68,13 @@ struct anti_periodic_gauge_field_traits : public gauge_field_traits< MatrixType,
 template< class MatrixType, class LatticeType >
 struct finite_gauge_field_traits : public gauge_field_traits< MatrixType, LatticeType, FP_FINITE >{};
 
+
 /*!**************************************************************************************
+ * @class  GaugeField
  * @author Malik Kirchner <malik.kirchner@gmx.net>
  *
+ * @brief  Gauge field over lattice links.
  ****************************************************************************************/
-
 template< class Traits >
 class GaugeField : public BaseField< Traits > {
 public:
