@@ -254,9 +254,6 @@ public:
     typedef std::complex<BT>                                                            scalar_type;
     //! matrix dimension of the spinor rep. in D space time dimensions
     typedef std::integral_constant<size_t, __spinor_dim(canonic_dim::value)>            spinor_dim;
-    //! matrix dimension of the spinor rep. in D-2 space time dimensions
-    typedef std::integral_constant<size_t,
-                    __spinor_dim(canonic_dim::value-(is_odd::value?0:2))>               prev_spinor_dim;
     //! type of the gamma matrices in D dimensions
     typedef Eigen::Matrix<body_type, spinor_dim::value, spinor_dim::value >             gamma_type;
     //! type of the gamma matrices in D-2 dimensions in sparse rep.
