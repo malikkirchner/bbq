@@ -76,6 +76,8 @@ private:
     typedef std::integral_constant<bool  , static_cast<bool>(D&1)>                      is_odd;
     //! complex number type (body)
     typedef std::complex<BT>                                                            body_type;
+    //! scalar type, complex numbers are based on
+    typedef std::complex<BT>                                                            scalar_type;
     //! matrix dimension of the spinor rep. in D space time dimensions
     typedef std::integral_constant<size_t, __spinor_dim(canonic_dim::value)>            spinor_dim;
     //! matrix dimension of the spinor rep. in D-2 space time dimensions
@@ -151,11 +153,18 @@ public:
 template< typename BT >
 class __gamma<BT, 3> {
 private:
-    typedef std::integral_constant<size_t, 2 >                              canonic_dim;
-    typedef std::integral_constant<bool  , static_cast<bool>(3&1)>          is_odd;
-    typedef std::complex<BT>                                                body_type;
-    typedef std::integral_constant<size_t, __spinor_dim(2)>                 spinor_dim;
-    typedef Eigen::Matrix<body_type, spinor_dim::value, spinor_dim::value>  gamma_type;
+    //! canonic space time dimension of the spinor representation
+    typedef std::integral_constant<size_t, 3&1?3-1:3 >                          canonic_dim;
+    //! Is the actual space time dimension odd?
+    typedef std::integral_constant<bool  , static_cast<bool>(3&1)>              is_odd;
+    //! complex number type (body)
+    typedef std::complex<BT>                                                    body_type;
+    //! scalar type, complex numbers are based on
+    typedef std::complex<BT>                                                    scalar_type;
+    //! matrix dimension of the spinor rep. in D space time dimensions
+    typedef std::integral_constant<size_t, __spinor_dim(canonic_dim::value)>    spinor_dim;
+    //! type of the gamma matrices in D dimensions
+    typedef Eigen::Matrix<body_type, spinor_dim::value, spinor_dim::value >     gamma_type;
 
 public:
     static std::vector<gamma_type> compile() noexcept {
@@ -185,11 +194,18 @@ public:
 template< typename BT >
 class __gamma<BT, 2> {
 private:
-    typedef std::integral_constant<size_t, 2 >                              canonic_dim;
-    typedef std::integral_constant<bool  , static_cast<bool>(2&1)>          is_ocanonic_dim;
-    typedef std::complex<BT>                                                body_type;
-    typedef std::integral_constant<size_t, __spinor_dim(2)>                 spinor_dim;
-    typedef Eigen::Matrix<body_type, spinor_dim::value, spinor_dim::value>  gamma_type;
+    //! canonic space time dimension of the spinor representation
+    typedef std::integral_constant<size_t, 2&1?2-1:2 >                          canonic_dim;
+    //! Is the actual space time dimension odd?
+    typedef std::integral_constant<bool  , static_cast<bool>(2&1)>              is_odd;
+    //! complex number type (body)
+    typedef std::complex<BT>                                                    body_type;
+    //! scalar type, complex numbers are based on
+    typedef std::complex<BT>                                                    scalar_type;
+    //! matrix dimension of the spinor rep. in D space time dimensions
+    typedef std::integral_constant<size_t, __spinor_dim(canonic_dim::value)>    spinor_dim;
+    //! type of the gamma matrices in D dimensions
+    typedef Eigen::Matrix<body_type, spinor_dim::value, spinor_dim::value >     gamma_type;
 
 public:
     static std::vector<gamma_type> compile() noexcept {
@@ -228,15 +244,23 @@ public:
 template< typename BT, size_t D >
 class GammaMatrixGenerator {
 public:
-    typedef std::complex<BT>                                                 body_type;
-    typedef BT                                                               scalar_type;
-
-    typedef std::integral_constant<size_t, D&1?D-1:D >                       canonic_dim;
-    typedef std::integral_constant<bool  , static_cast<bool>(D&1)>           is_odd;
-    typedef std::integral_constant<size_t, __spinor_dim(canonic_dim::value)> spinor_dim;
-    typedef typename PauliMatrixGenerator<BT>::pauli_type                    pauli_type;
-    typedef Eigen::Matrix<body_type,spinor_dim::value,spinor_dim::value>     gamma_type;
-    typedef Eigen::SparseMatrix<body_type>                                   sparse_gamma_type;
+    //! canonic space time dimension of the spinor representation
+    typedef std::integral_constant<size_t, D&1?D-1:D >                                  canonic_dim;
+    //! Is the actual space time dimension odd?
+    typedef std::integral_constant<bool  , static_cast<bool>(D&1)>                      is_odd;
+    //! complex number type (body)
+    typedef std::complex<BT>                                                            body_type;
+    //! scalar type, complex numbers are based on
+    typedef std::complex<BT>                                                            scalar_type;
+    //! matrix dimension of the spinor rep. in D space time dimensions
+    typedef std::integral_constant<size_t, __spinor_dim(canonic_dim::value)>            spinor_dim;
+    //! matrix dimension of the spinor rep. in D-2 space time dimensions
+    typedef std::integral_constant<size_t,
+                    __spinor_dim(canonic_dim::value-(is_odd::value?0:2))>               prev_spinor_dim;
+    //! type of the gamma matrices in D dimensions
+    typedef Eigen::Matrix<body_type, spinor_dim::value, spinor_dim::value >             gamma_type;
+    //! type of the gamma matrices in D-2 dimensions in sparse rep.
+    typedef Eigen::SparseMatrix<body_type>                                              sparse_gamma_type;
 
 private:
     const std::vector<gamma_type>        _gamma;
