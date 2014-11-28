@@ -60,11 +60,7 @@ namespace math {
 
 //! matrix dimension of the spinor rep. in D space time dimensions
 constexpr size_t __spinor_dim( const size_t D ) {
-    size_t res = D;
-    if ( D&1 ) {
-        res--;
-    }
-    return (1 << res/2);
+    return D&1 ? (1 << (D-1)/2) : (1 << D/2);
 }
 
 template< typename BT, size_t D >

@@ -51,7 +51,7 @@
 
 namespace math {
 
-constexpr int mod ( const int idx, const int d ) {
+inline int mod ( const int idx, const int d ) {
     const int dm1 = d-1;
     int aux  = idx;
         aux &= dm1;
@@ -60,7 +60,7 @@ constexpr int mod ( const int idx, const int d ) {
     return aux;
 }
     
-constexpr long mod ( const long idx, const long d ) {
+inline long mod ( const long idx, const long d ) {
     const long dm1 = d-1;
     long aux  = idx;
          aux &= dm1;
@@ -69,13 +69,13 @@ constexpr long mod ( const long idx, const long d ) {
     return aux;
 }
 
-constexpr unsigned mod ( const unsigned  idx, const unsigned d ) {
+inline unsigned mod ( const unsigned  idx, const unsigned d ) {
     unsigned aux  = idx;
              aux &= d-1;
     return aux;
 }
 
-constexpr unsigned long mod ( const unsigned long idx, const unsigned long d ) {
+inline unsigned long mod ( const unsigned long idx, const unsigned long d ) {
     unsigned long aux  = idx;
                   aux &= d-1;
     return aux;

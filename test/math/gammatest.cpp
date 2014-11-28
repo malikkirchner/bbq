@@ -58,8 +58,9 @@ template< typename gamma_type >
 bool checkEta( size_t mu, size_t nu, gamma_type commutator, double tol = 1e-4 ) {
     bool res = true;
 
-    for ( size_t i = 0; i < commutator.rows(); ++i )
-        for ( size_t k = 0; k < commutator.cols(); ++k ) {
+    const size_t L = static_cast<size_t>( commutator.cols() );
+    for ( size_t i = 0; i < L; ++i )
+        for ( size_t k = 0; k < L; ++k ) {
             if ( (i != k) || (mu != nu) )
                 res &= fabs(commutator(i,k)) < tol;
             if ( (i == k) && (mu == nu) )
@@ -73,10 +74,11 @@ template< typename BT, size_t D >
 bool checkSignature( const math::GammaMatrixGenerator< BT, D >& gamma, BT tol = 1e-4 ) {
     bool res = true;
 
+    const size_t L = math::GammaMatrixGenerator< BT, D >::spinor_dim::value;
     for ( size_t d = 0; d < D; ++d ) {
         typename math::GammaMatrixGenerator< BT, D >::gamma_type id = gamma[d]*gamma[d];
-        for ( size_t i = 0; i < id.rows(); ++i )
-            for ( size_t k = 0; k < id.cols(); ++k ) {
+        for ( size_t i = 0; i < L; ++i )
+            for ( size_t k = 0; k < L; ++k ) {
                 if (i != k) res &= fabs(id(i,k)) < tol;
                 if (i == k) res &= 1.-fabs(id(i,k)) < tol;
             }
@@ -97,8 +99,9 @@ bool checkChirality( const math::GammaMatrixGenerator< BT, D >& gamma, BT tol = 
     for ( size_t d = 1; d < D; ++d )
         ch *= gamma[d];
 
-    for ( size_t i = 0; i < ch.rows(); ++i )
-        for ( size_t k = 0; k < ch.cols(); ++k ) {
+    const size_t L = math::GammaMatrixGenerator< BT, D >::spinor_dim::value;
+    for ( size_t i = 0; i < L; ++i )
+        for ( size_t k = 0; k < L; ++k ) {
             res &= fabs(ch(i,k)-gamma.chiral()(i,k)) < tol;
         }
 

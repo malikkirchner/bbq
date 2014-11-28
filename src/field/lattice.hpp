@@ -73,8 +73,8 @@ public:
         typedef T index_type;
         
         index_type c[D];
-        constexpr index_type& operator[]( const index_type k ) noexcept { return c[k]; }
-        constexpr index_type const& operator[]( const index_type k ) const noexcept { return c[k]; }
+        inline index_type& operator[]( const index_type k ) noexcept { return c[k]; }
+        inline index_type const& operator[]( const index_type k ) const noexcept { return c[k]; }
 
         Index()               = default;
         Index( const Index& ) = default;

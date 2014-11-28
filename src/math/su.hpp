@@ -80,8 +80,8 @@ public:
 
     void setZero() { data.setZero(); }
 
-    constexpr body_type& operator()( const size_t m, const size_t n ) noexcept { return data(m,n); }
-    constexpr body_type const & operator()( const size_t m, const size_t n ) const noexcept { return data(m,n); }
+    inline body_type& operator()( const size_t m, const size_t n ) noexcept { return data(m,n); }
+    inline body_type const & operator()( const size_t m, const size_t n ) const noexcept { return data(m,n); }
 };
 
 
@@ -110,8 +110,8 @@ public:
 
     void setZero() { data.setZero(); }
 
-    constexpr body_type& operator()( const size_t m, const size_t n ) noexcept { return data(m,n); }
-    constexpr body_type const & operator()( const size_t m, const size_t n ) const noexcept { return data(m,n); }
+    inline body_type& operator()( const size_t m, const size_t n ) noexcept { return data(m,n); }
+    inline body_type const & operator()( const size_t m, const size_t n ) const noexcept { return data(m,n); }
 
     constexpr BT norm2 () {
         const Eigen::MatrixBase< matrix_type > mb(data);
