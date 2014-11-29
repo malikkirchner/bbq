@@ -49,18 +49,16 @@
 
 #pragma once
 
-#include <montecarlo/montecarlo.hpp>
-
-namespace montecarlo {
+namespace observable {
 
 
 /*!**************************************************************************************
- * @class  HeatBath
+ * @class  Observable
  * @author Malik Kirchner <malik.kirchner@gmx.net>
  *
- * @brief  Heat bath updating algorithm for SU(N) matrices in D dimensions.
+ * @brief  Observable base class
  ****************************************************************************************/
-class HeatBath : public MonteCarlo {
+class Observable {
 public:
 };
 

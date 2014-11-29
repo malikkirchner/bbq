@@ -63,25 +63,11 @@ namespace math {
  * http://en.wikipedia.org/wiki/Special_unitary_group
  ****************************************************************************************/
 template< typename BT, size_t N >
-class SU {
-private:
-    Eigen::Matrix< std::complex<BT>, N, N > data;
-
+class SU : public Eigen::Matrix< std::complex<BT>, N, N > {
 public:
     typedef std::complex<BT>                        body_type;
     typedef BT                                      scalar_type;
     typedef Eigen::Matrix< std::complex<BT>, N, N > matrix_type;
-
-    constexpr SU<BT, N> dagger() {
-        Eigen::MatrixBase< matrix_type >  mb(data);
-        mb.adjointInPlace();
-        return mb;
-    }
-
-    void setZero() { data.setZero(); }
-
-    inline body_type& operator()( const size_t m, const size_t n ) noexcept { return data(m,n); }
-    inline body_type const & operator()( const size_t m, const size_t n ) const noexcept { return data(m,n); }
 };
 
 

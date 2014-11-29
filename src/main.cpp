@@ -55,6 +55,7 @@
 #include <math/su.hpp>
 #include <math/subase.hpp>
 #include <operators/wilsondirac.hpp>
+#include <observables/wilsonloop.hpp>
 
 /*!**************************************************************************************
  * @author Malik Kirchner <malik.kirchner@gmx.net>
@@ -70,12 +71,18 @@ int main ( int argc, char** argv ) {
     typedef math::SU<double, 3>         gauge_type;
     typedef field::periodic_fermion_field_traits< spinor_type, lattice_type >   fermion_traits;
     typedef field::periodic_gauge_field_traits< gauge_type, lattice_type >      gauge_traits;
+    typedef field::GaugeField< gauge_traits >       gauge_field;
+    typedef field::FermionField< fermion_traits >   fermion_field;
 
-    field::FermionField< fermion_traits >   phi(lattice);
-    field::GaugeField< gauge_traits >       U(lattice);
+    fermion_field   phi(lattice);
+    gauge_field     U(lattice);
     operators::WilsonDirac< fermion_traits, gauge_traits > wilson(lattice);
 
     phi = wilson.apply( phi, U );
+
+
+    field::Neighbours< gauge_traits::lattice_type, gauge_traits::periodicity::value > neighbours( lattice );
+    observable::WilsonLoop<gauge_field>::eval( U, neighbours );
 
     using namespace math;
 

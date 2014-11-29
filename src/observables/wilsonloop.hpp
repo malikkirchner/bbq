@@ -49,19 +49,61 @@
 
 #pragma once
 
-#include <montecarlo/montecarlo.hpp>
+#include <observables/observable.hpp>
+#include <field/neighbours.hpp>
 
-namespace montecarlo {
+namespace observable {
 
 
 /*!**************************************************************************************
- * @class  HeatBath
+ * @class  Observable
  * @author Malik Kirchner <malik.kirchner@gmx.net>
  *
- * @brief  Heat bath updating algorithm for SU(N) matrices in D dimensions.
+ * @brief  Wilson loop observable
+ *
+ * http://en.wikipedia.org/wiki/Wilson_loop
  ****************************************************************************************/
-class HeatBath : public MonteCarlo {
+template< typename Gauge >
+class WilsonLoop : public Observable {
 public:
+    typedef Gauge                                          gauge_field;
+    typedef typename gauge_field::gauge_type               gauge_type;
+    typedef typename gauge_field::traits::lattice_type     lattice_type;
+    typedef typename gauge_field::traits::body_type        body_type;
+    typedef typename gauge_field::traits::periodicity      periodicity;
+    typedef field::Neighbours< lattice_type, periodicity::value > neighbours_type;
+
+private:
+    static constexpr auto loop( const gauge_field& gauge, const neighbours_type& neighbours,
+                                const size_t x, const size_t mu, const size_t nu ) noexcept
+    {
+        return   gauge(            x        , nu ).adjoint()
+               * gauge( neighbours(x,nu).fwd, mu ).adjoint()
+               * gauge( neighbours(x,mu).fwd, nu )
+               * gauge(            x        , mu );
+    }
+
+public:
+
+    static body_type eval( const gauge_field& gauge, const neighbours_type& neighbours ) noexcept {
+        const lattice_type lattice = gauge.lattice();
+
+        const size_t volume = lattice.volume();
+        const size_t dim    = lattice_type::lattice_dim::value;
+
+        gauge_type wl;
+        wl.setZero();
+
+        for ( size_t x = 0; x < volume; ++x ) {
+            for ( size_t mu = 0; mu < dim; ++mu )
+            for ( size_t nu = 0; nu < mu;  ++nu ) {
+                wl += loop( gauge, neighbours, x, mu, nu );
+            }
+        }
+
+        return body_type{0.};
+    }
+
 };
 
 }

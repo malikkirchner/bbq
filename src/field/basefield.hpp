@@ -65,8 +65,10 @@ enum field_periodicity {
     
 template<class MatrixType, class LatticeType, bool IsLink, field_periodicity Periodicity>
 struct field_traits {
-    typedef MatrixType      matrix_type;
-    typedef LatticeType     lattice_type;
+    typedef MatrixType                          matrix_type;
+    typedef LatticeType                         lattice_type;
+    typedef typename MatrixType::body_type      body_type;
+    typedef typename MatrixType::scalar_type    scalar_type;
     typedef std::integral_constant< bool, IsLink >                    is_link;
     typedef std::integral_constant< field_periodicity, Periodicity >  periodicity;
     typedef typename LatticeType::lattice_dim                         lattice_dim;
@@ -132,11 +134,11 @@ public:
         return *this;
     }
 
-    matrix_type& operator[] ( const size_t k ) noexcept {
+    constexpr matrix_type& operator[] ( const size_t k ) noexcept {
         return _data[k];
     }
 
-    const matrix_type& operator[] ( const size_t k ) const noexcept {
+    constexpr matrix_type const & operator[] ( const size_t k ) const noexcept {
         return _data[k];
     }
 

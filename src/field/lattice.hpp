@@ -96,13 +96,12 @@ private:
     
 protected:
     const Index<size_t>  _dimension;
-    const size_t         _dim;
     const size_t         _volume;
     
 public:
     
     Lattice( const Index<size_t>& dim ) noexcept : 
-        _dimension(dim), _dim(D), _volume( __volume__(dim) )
+        _dimension(dim), _volume( __volume__(dim) )
     {
         static_assert( D > 1, "Lattice dimension must be at least two." );
         assert( _volume > 0 );
@@ -114,8 +113,7 @@ public:
     Lattice& operator = ( Lattice&& )      = default;
 
     constexpr bool operator == ( const Lattice& other ) const noexcept {
-        return ( other._dim    == _dim ) &&
-               ( other._volume == _volume );
+        return ( other._volume == _volume );
     }
     
     constexpr size_t addr( const Index<size_t>& idx ) const noexcept {
@@ -155,7 +153,7 @@ public:
         return res;
     }
     
-    constexpr size_t dim()                       const noexcept { return _dim; }
+    constexpr size_t dim()                       const noexcept { return lattice_dim::value; }
     constexpr size_t volume()                    const noexcept { return _volume; }
     constexpr size_t dimension( const size_t k ) const noexcept { return _dimension[k]; }
     
