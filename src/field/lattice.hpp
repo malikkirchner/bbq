@@ -129,7 +129,7 @@ public:
         return res;
     }
     
-    constexpr size_t addr_mod( const Index<long>& idx ) const noexcept {
+    inline size_t addr_mod( const Index<long>& idx ) const noexcept {
         size_t res = 0;
 
         if ( fast_mod::value ) {
@@ -151,7 +151,7 @@ public:
             }
 
         }
-        
+
         return res;
     }
     

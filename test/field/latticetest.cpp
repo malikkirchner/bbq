@@ -57,7 +57,7 @@
 
 
 
-#define LAT_ADDR(a,b,c,d) (((( (a%32+32)%32 )*32+( (b%32+32)%32 ))*32+( (c%32+32)%32 ))*32+( (d%32+32)%32 ))
+#define LAT_ADDR(a,b,c,d,L) (((( (a%L+L)%L )*L+( (b%L+L)%L ))*L+( (c%L+L)%L ))*L+( (d%L+L)%L ))
 
 BOOST_AUTO_TEST_CASE(LatticePerformanceTest) {
     using namespace field;
@@ -68,6 +68,10 @@ BOOST_AUTO_TEST_CASE(LatticePerformanceTest) {
     double  fast_mod;
     long x0 = 0;
     long x1 = 0;
+
+    int L   = 32;
+    std::cout << "Type 32 and press enter! ";
+    std::cin  >> L;
 
     {
         auto start = std::chrono::high_resolution_clock::now();
@@ -91,7 +95,7 @@ BOOST_AUTO_TEST_CASE(LatticePerformanceTest) {
         for ( long b = -32; b < 32; b++ )
         for ( long c = -32; c < 32; c++ )
         for ( long d = -32; d < 32; d++ ) {
-            x1 += LAT_ADDR(a,b,c,d);
+            x1 += LAT_ADDR(a,b,c,d,L);
         }
         auto stop   = std::chrono::high_resolution_clock::now();
         stl_mod     = std::chrono::duration_cast<std::chrono::milliseconds>(stop-start).count();

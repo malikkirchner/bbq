@@ -51,7 +51,7 @@
 
 namespace math {
 
-inline int mod ( const int idx, const int d ) {
+inline int mod ( const int idx, const int d ) noexcept {
     const int dm1 = d-1;
     int aux  = idx;
         aux &= dm1;
@@ -59,8 +59,8 @@ inline int mod ( const int idx, const int d ) {
         aux &= dm1;
     return aux;
 }
-    
-inline long mod ( const long idx, const long d ) {
+
+inline long mod ( const long idx, const long d ) noexcept {
     const long dm1 = d-1;
     long aux  = idx;
          aux &= dm1;
@@ -69,16 +69,16 @@ inline long mod ( const long idx, const long d ) {
     return aux;
 }
 
-inline unsigned mod ( const unsigned  idx, const unsigned d ) {
+inline unsigned mod ( const unsigned  idx, const unsigned d ) noexcept {
     unsigned aux  = idx;
              aux &= d-1;
     return aux;
 }
 
-inline unsigned long mod ( const unsigned long idx, const unsigned long d ) {
+inline unsigned long mod ( const unsigned long idx, const unsigned long d ) noexcept {
     unsigned long aux  = idx;
                   aux &= d-1;
     return aux;
 }
-    
+
 }

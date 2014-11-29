@@ -97,7 +97,7 @@ protected:
     }
 
     void compile( index_type& idx, const size_t mu ) noexcept {
-        const size_t L = _lattice.dimension(mu);
+        const long L = _lattice.dimension(mu);
 
         if ( mu < _dim - 1 ) {
             for ( idx[mu] = 0; idx[mu] < L; ++idx[mu] ) {
