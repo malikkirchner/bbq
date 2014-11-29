@@ -49,56 +49,17 @@
 
 #pragma once
 
-namespace math {
+namespace montecarlo {
 
-inline int mod ( const int idx, const int d ) noexcept {
-    const int dm1 = d-1;
-    int aux  = idx;
-        aux &= dm1;
-        aux += d;
-        aux &= dm1;
-    return aux;
-}
 
-inline long mod ( const long idx, const long d ) noexcept {
-    const long dm1 = d-1;
-    long aux  = idx;
-         aux &= dm1;
-         aux += d;
-         aux &= dm1;
-    return aux;
-}
-
-inline unsigned mod ( const unsigned  idx, const unsigned d ) noexcept {
-    unsigned aux  = idx;
-             aux &= d-1;
-    return aux;
-}
-
-inline unsigned long mod ( const unsigned long idx, const unsigned long d ) noexcept {
-    unsigned long aux  = idx;
-                  aux &= d-1;
-    return aux;
-}
+/*!**************************************************************************************
+ * @class  MonteCarlo
+ * @author Malik Kirchner <malik.kirchner@gmx.net>
+ *
+ * @brief  Monte Carlo updater base class.
+ ****************************************************************************************/
+class MonteCarlo {
+public:
+};
 
 }
-
-/*
- * BENCHMARK 29.11.2014
- *
- * Lattice 32x32x32x32
- *
- * Intel(R) Core(TM) i7 CPU 920 @ 2.67GHz
- *
- * CLang 3.5.0
- * GCC   4.9.2
- *
- * CXX_FLAGS=-march=native -fomit-frame-pointer -pipe -Wall -pedantic -g0 -O2 -fpic -std=c++14 -DNDEBUG
- *
- *              |      GCC      |     CLang
- * -------------|---------------|---------------
- * fast mod     |     23.2s     |      2.4s
- * stl  mod     |     91.4s     |     91.5s
- *
- */
-
