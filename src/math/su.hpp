@@ -68,6 +68,11 @@ public:
     typedef std::complex<BT>                        body_type;
     typedef BT                                      scalar_type;
     typedef Eigen::Matrix< std::complex<BT>, N, N > matrix_type;
+
+    constexpr BT norm2 () {
+        const Eigen::MatrixBase< matrix_type > mb(*this);
+        return (mb*(*this)).trace().real();
+    }
 };
 
 
@@ -79,36 +84,16 @@ public:
  * http://en.wikipedia.org/wiki/Special_unitary_group
  ****************************************************************************************/
 template< typename BT, size_t N >
-class su  {
-private:
-    Eigen::Matrix< std::complex<BT>, N, N > data;
-
+class su : public Eigen::Matrix< std::complex<BT>, N, N > {
 public:
     typedef std::complex<BT>                        body_type;
     typedef BT                                      scalar_type;
     typedef Eigen::Matrix< std::complex<BT>, N, N > matrix_type;
 
-    constexpr su<BT, N> dagger() {
-        Eigen::MatrixBase< matrix_type > mb(data);
-        mb.adjointInPlace();
-        return su{ data=mb };
-    }
-
-    void setZero() { data.setZero(); }
-
-    inline body_type& operator()( const size_t m, const size_t n ) noexcept { return data(m,n); }
-    inline body_type const & operator()( const size_t m, const size_t n ) const noexcept { return data(m,n); }
-
     constexpr BT norm2 () {
-        const Eigen::MatrixBase< matrix_type > mb(data);
-        return (mb*data).trace().real();
+        const Eigen::MatrixBase< matrix_type > mb(*this);
+        return (mb*(*this)).trace().real();
     }
-
-    std::ostream& print( std::ostream& os ) {
-        os << data;
-        return os;
-    }
-
 };
 
 

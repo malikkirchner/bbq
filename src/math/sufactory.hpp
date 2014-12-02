@@ -131,8 +131,8 @@ public:
 
         if ( N == 1 ) {
             cos_alpha = static_cast< BT >(uni());
-            res(0,0).real() = cos_alpha;
-            res(0,0).imag() = sqrt(1.0-cos_alpha*cos_alpha);
+            res(0,0).real( cos_alpha );
+            res(0,0).imag( sqrt(1.0-cos_alpha*cos_alpha) );
         } else {
             math::suBase<BT,2>                         base;
             math::su<BT,2>                             G;
@@ -156,8 +156,11 @@ public:
                     coeff.c[1] = (BT)sin_alpha*sin_theta*sin_phi;
                     coeff.c[2] = (BT)sin_alpha*cos_theta;
 
-                    G  = cos_alpha;	              ; G -= I*coeff.c[0]*base.base[1];
-                    G -= I*coeff.c[1]*base.base[2]; G -= I*coeff.c[2]*base.base[3];
+                    G.setIdentity();
+                    G *= cos_alpha;
+                    G -= I*coeff.c[0]*base.base[1];
+                    G -= I*coeff.c[1]*base.base[2];
+                    G -= I*coeff.c[2]*base.base[3];
 
                     A = res;
                     for ( unsigned k = 0; k < N; k++ ) {
@@ -174,7 +177,9 @@ public:
     }
 
     virtual matrix_type identity() noexcept final {
-        return matrix_type::Identity();
+        matrix_type res;
+        res.setIdentity();
+        return res;
     }
 
     virtual matrix_type zero() noexcept final {

@@ -134,11 +134,11 @@ public:
         return *this;
     }
 
-    constexpr matrix_type& operator[] ( const size_t k ) noexcept {
+    inline matrix_type& operator[] ( const size_t k ) noexcept {
         return _data[k];
     }
 
-    constexpr matrix_type const & operator[] ( const size_t k ) const noexcept {
+    inline matrix_type const & operator[] ( const size_t k ) const noexcept {
         return _data[k];
     }
 

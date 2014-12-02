@@ -54,6 +54,7 @@
 #include <math/spinor.hpp>
 #include <math/su.hpp>
 #include <math/subase.hpp>
+#include <math/sufactory.hpp>
 #include <operators/wilsondirac.hpp>
 #include <observables/wilsonloop.hpp>
 
@@ -64,7 +65,7 @@
 int main ( int argc, char** argv ) {
     int EXIT_CODE = 0;
 
-    field::Lattice<4> lattice{{{8,8,8,8}}};
+    field::Lattice<4> lattice{{{2,2,2,2}}};
 
     typedef field::Lattice<4>           lattice_type;
     typedef math::Spinor<double, 4, 3>  spinor_type;
@@ -74,23 +75,22 @@ int main ( int argc, char** argv ) {
     typedef field::GaugeField< gauge_traits >       gauge_field;
     typedef field::FermionField< fermion_traits >   fermion_field;
 
+    math::SUFactory< double, 3 > suFactory;
+
+
     fermion_field   phi(lattice);
     gauge_field     U(lattice);
-    operators::WilsonDirac< fermion_traits, gauge_traits > wilson(lattice);
 
+    for ( size_t k = 0; k < U.numLinks(); k++ ) {
+        U[k] = suFactory.generateRandom();
+        std::cout << U[k] << std::endl;
+    }
+
+    operators::WilsonDirac< fermion_traits, gauge_traits > wilson(lattice);
     phi = wilson.apply( phi, U );
 
-
     field::Neighbours< gauge_traits::lattice_type, gauge_traits::periodicity::value > neighbours( lattice );
-    observable::WilsonLoop<gauge_field>::eval( U, neighbours );
-
-    using namespace math;
-
-    math::suBase<double,3> sub;
-    for ( size_t k = 0; k < 3*3; k++ )
-        sub.base[k].print(std::cout) << std::endl << std::endl;
-
-    math::GammaMatrixGenerator<double, 4> gamma;
+    std::cout << "plaquette = " << observable::WilsonLoop<gauge_field>::eval( U, neighbours ) << std::endl;
 
 //    gamma.print();
 

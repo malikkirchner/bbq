@@ -99,14 +99,17 @@ public:
 
     }
 
-    constexpr gauge_type& operator()( const size_t x, const size_t mu  ) noexcept {
+    inline gauge_type& operator()( const size_t x, const size_t mu  ) noexcept {
         return base_type::operator []( x*4+mu );
     }
 
-    constexpr gauge_type const & operator()( const size_t x, const size_t mu  ) const noexcept {
+    inline gauge_type const & operator()( const size_t x, const size_t mu  ) const noexcept {
         return base_type::operator []( x*4+mu );
     }
 
+    inline size_t numLinks() const noexcept {
+        return base_type::_volume*base_type::_dim;
+    }
 };
 
 }
