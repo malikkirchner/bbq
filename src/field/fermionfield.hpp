@@ -13,8 +13,6 @@
 ==========================================================================================
 *****************************************************************************************/
 
-
-
 //**************************************************************************************//
 //     Copyright (C) 2014 Malik Kirchner "malik.kirchner@gmx.net"                       //
 //                                                                                      //
@@ -46,28 +44,26 @@
 //                                                                                      //
 //**************************************************************************************//
 
-
 #pragma once
-
 
 #include <field/basefield.hpp>
 
 namespace field {
 
+template <class MatrixType, class LatticeType, field_periodicity Periodicity>
+struct fermion_field_traits : public field_traits<MatrixType, LatticeType, false, Periodicity> {};
 
-template< class MatrixType, class LatticeType, field_periodicity Periodicity >
-struct fermion_field_traits : public field_traits< MatrixType, LatticeType, false, Periodicity >{};
+template <class MatrixType, class LatticeType>
+struct periodic_fermion_field_traits
+    : public fermion_field_traits<MatrixType, LatticeType, FP_PERIODIC> {};
 
-template< class MatrixType, class LatticeType >
-struct periodic_fermion_field_traits : public fermion_field_traits< MatrixType, LatticeType, FP_PERIODIC >{};
+template <class MatrixType, class LatticeType>
+struct anti_periodic_fermion_field_traits
+    : public fermion_field_traits<MatrixType, LatticeType, FP_ANTI_PERIODIC> {};
 
-template< class MatrixType, class LatticeType >
-struct anti_periodic_fermion_field_traits : public fermion_field_traits< MatrixType, LatticeType, FP_ANTI_PERIODIC >{};
-
-template< class MatrixType, class LatticeType >
-struct finite_fermion_field_traits : public fermion_field_traits< MatrixType, LatticeType, FP_FINITE >{};
-
-
+template <class MatrixType, class LatticeType>
+struct finite_fermion_field_traits
+    : public fermion_field_traits<MatrixType, LatticeType, FP_FINITE> {};
 
 /*!**************************************************************************************
  * @class  FermionField
@@ -75,30 +71,20 @@ struct finite_fermion_field_traits : public fermion_field_traits< MatrixType, La
  *
  * @brief  Fermion field over lattice sites.
  ****************************************************************************************/
-template< class Traits >
-class FermionField : public BaseField< Traits > {
+template <class Traits> class FermionField : public BaseField<Traits> {
 public:
-    typedef BaseField< Traits >           base_type;
-    typedef Traits                        traits;
-    typedef typename traits::matrix_type  spinor_type;
-    typedef typename traits::lattice_type lattice_type;
+    using base_type    = BaseField<Traits>;
+    using traits       = Traits;
+    using spinor_type  = typename traits::matrix_type;
+    using lattice_type = typename traits::lattice_type;
 
 private:
-
 protected:
-
 public:
+    FermionField(const lattice_type& lattice)
+        : base_type(lattice) {}
 
-    FermionField( const lattice_type& lattice ) : base_type( lattice )
-    {
-
-    }
-
-    FermionField( const FermionField& other ) : base_type( other )
-    {
-
-    }
-
+    FermionField(const FermionField& other)
+        : base_type(other) {}
 };
-
 }

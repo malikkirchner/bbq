@@ -13,8 +13,6 @@
 ==========================================================================================
 *****************************************************************************************/
 
-
-
 //**************************************************************************************//
 //     Copyright (C) 2014 Malik Kirchner "malik.kirchner@gmx.net"                       //
 //                                                                                      //
@@ -46,14 +44,12 @@
 //                                                                                      //
 //**************************************************************************************//
 
-
 #pragma once
 
-#include <field/gaugefield.hpp>
 #include <field/fermionfield.hpp>
+#include <field/gaugefield.hpp>
 
 namespace operators {
-
 
 /*!**************************************************************************************
  * @class  Operator
@@ -61,16 +57,14 @@ namespace operators {
  *
  * @brief  Operator base class.
  ****************************************************************************************/
-template< typename fermion_traits, typename gauge_traits >
-class Operator {
+template <typename fermion_traits, typename gauge_traits> class Operator {
 public:
-    typedef typename fermion_traits::matrix_type::body_type     body_type;
-    typedef typename fermion_traits::matrix_type::scalar_type   scalar_type;
-    typedef field::FermionField<fermion_traits>                 fermion_field;
-    typedef field::GaugeField<gauge_traits>                     gauge_field;
-    typedef typename fermion_traits::lattice_type               lattice_type;
+    using body_type     = typename fermion_traits::matrix_type::body_type;
+    using scalar_type   = typename fermion_traits::matrix_type::scalar_type;
+    using fermion_field = field::FermionField<fermion_traits>;
+    using gauge_field   = field::GaugeField<gauge_traits>;
+    using lattice_type  = typename fermion_traits::lattice_type;
 
-    virtual fermion_field apply( const fermion_field& phi, const gauge_field& U ) const = 0;
+    virtual fermion_field apply(const fermion_field& phi, const gauge_field& U) const = 0;
 };
-
 }

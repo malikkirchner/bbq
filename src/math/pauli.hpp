@@ -13,8 +13,6 @@
 ==========================================================================================
 *****************************************************************************************/
 
-
-
 //**************************************************************************************//
 //     Copyright (C) 2014 Malik Kirchner "malik.kirchner@gmx.net"                       //
 //                                                                                      //
@@ -46,15 +44,13 @@
 //                                                                                      //
 //**************************************************************************************//
 
-
 #pragma once
 
-#include <complex>
 #include <Eigen/Core>
+#include <complex>
 #include <iostream>
 
 namespace math {
-
 
 /*!**************************************************************************************
  * @class  PauliMatrixGenerator
@@ -62,36 +58,40 @@ namespace math {
  *
  * @brief  Generates Pauli matrices.
  ****************************************************************************************/
-template< typename BT >
-class PauliMatrixGenerator {
+template <typename BT> class PauliMatrixGenerator {
 public:
-    typedef std::complex<BT>             body_type;
-    typedef BT                           scalar_type;
-    typedef Eigen::Matrix<body_type,2,2> pauli_type;
+    using body_type   = std::complex<BT>;
+    using scalar_type = BT;
+    using pauli_type  = Eigen::Matrix<body_type, 2, 2>;
 
     //! \return Pauli matrix \f$\sigma_1\f$
     static pauli_type sigma1() noexcept {
         pauli_type m;
-        m(0,0) = body_type{0,0}; m(0,1) = body_type{1,0};
-        m(1,0) = body_type{1,0}; m(1,1) = body_type{0,0};
+        m(0, 0) = body_type{0, 0};
+        m(0, 1) = body_type{1, 0};
+        m(1, 0) = body_type{1, 0};
+        m(1, 1) = body_type{0, 0};
         return m;
     }
 
     //! \return Pauli matrix \f$\sigma_2\f$
     static pauli_type sigma2() noexcept {
         pauli_type m;
-        m(0,0) = body_type{0,0}; m(0,1) = body_type{0,-1};
-        m(1,0) = body_type{0,1}; m(1,1) = body_type{0, 0};
+        m(0, 0) = body_type{0, 0};
+        m(0, 1) = body_type{0, -1};
+        m(1, 0) = body_type{0, 1};
+        m(1, 1) = body_type{0, 0};
         return m;
     }
 
     //! \return Pauli matrix \f$\sigma_1\f$
     static pauli_type sigma3() noexcept {
         pauli_type m;
-        m(0,0) = body_type{1,0}; m(0,1) = body_type{ 0,0};
-        m(1,0) = body_type{0,0}; m(1,1) = body_type{-1,0};
+        m(0, 0) = body_type{1, 0};
+        m(0, 1) = body_type{0, 0};
+        m(1, 0) = body_type{0, 0};
+        m(1, 1) = body_type{-1, 0};
         return m;
     }
 };
-
 }

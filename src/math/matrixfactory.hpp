@@ -13,8 +13,6 @@
 ==========================================================================================
 *****************************************************************************************/
 
-
-
 //**************************************************************************************//
 //     Copyright (C) 2014 Malik Kirchner "malik.kirchner@gmx.net"                       //
 //                                                                                      //
@@ -46,12 +44,9 @@
 //                                                                                      //
 //**************************************************************************************//
 
-
 #pragma once
 
-
 namespace math {
-
 
 /*!**************************************************************************************
  * @class  MatrixFactory
@@ -59,14 +54,10 @@ namespace math {
  *
  * @brief  Matrix factory base class.
  ****************************************************************************************/
-template<class MatrixType>
-class MatrixFactory {
+template <class MatrixType> class MatrixFactory {
 public:
-
     virtual MatrixType generateRandom() = 0;
     virtual MatrixType identity()       = 0;
     virtual MatrixType zero()           = 0;
-
 };
-
 }

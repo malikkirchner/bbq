@@ -13,8 +13,6 @@
 ==========================================================================================
 *****************************************************************************************/
 
-
-
 //**************************************************************************************//
 //     Copyright (C) 2014 Malik Kirchner "malik.kirchner@gmx.net"                       //
 //                                                                                      //
@@ -46,17 +44,14 @@
 //                                                                                      //
 //**************************************************************************************//
 
-
 #pragma once
 
-template< typename T >
-constexpr void safe_delete( T& ptr ) {
-    if ( ptr ) delete ptr;
-    ptr = NULL;
+template <typename T> constexpr void safe_delete(T& ptr) {
+    if (ptr) delete ptr;
+    ptr = nullptr;
 }
 
-template< typename T >
-constexpr void safe_array_delete( T& ptr ) {
-    if ( ptr ) delete [] ptr;
-    ptr = NULL;
+template <typename T> constexpr void safe_array_delete(T& ptr) {
+    if (ptr) delete[] ptr;
+    ptr = nullptr;
 }

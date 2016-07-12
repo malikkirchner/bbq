@@ -13,8 +13,6 @@
 ==========================================================================================
 *****************************************************************************************/
 
-
-
 //**************************************************************************************//
 //     Copyright (C) 2014 Malik Kirchner "malik.kirchner@gmx.net"                       //
 //                                                                                      //
@@ -46,14 +44,12 @@
 //                                                                                      //
 //**************************************************************************************//
 
-
 #pragma once
 
-#include <complex>
 #include <Eigen/Core>
+#include <complex>
 
 namespace math {
-
 
 /*!**************************************************************************************
  * @class  SL
@@ -62,15 +58,12 @@ namespace math {
  * SL(N) group element in NxN matrix representation.
  * http://en.wikipedia.org/wiki/Special_linear_group
  ****************************************************************************************/
-template< typename BT, size_t N >
-class SL : public Eigen::Matrix< std::complex<BT>, N, N > {
+template <typename BT, std::size_t N> class SL : public Eigen::Matrix<std::complex<BT>, N, N> {
 public:
-    typedef std::complex<BT>                        body_type;
-    typedef BT                                      scalar_type;
-    typedef Eigen::Matrix< std::complex<BT>, N, N > matrix_type;
-
+    using body_type   = std::complex<BT>;
+    using scalar_type = BT;
+    using matrix_type = Eigen::Matrix<std::complex<BT>, N, N>;
 };
-
 
 /*!**************************************************************************************
  * @class  sl
@@ -79,13 +72,10 @@ public:
  * sl(N) algebra element in NxN matrix representation.
  * http://en.wikipedia.org/wiki/Special_linear_group
  ****************************************************************************************/
-template< typename BT, size_t N >
-class sl : public Eigen::Matrix< std::complex<BT>, N, N > {
+template <typename BT, std::size_t N> class sl : public Eigen::Matrix<std::complex<BT>, N, N> {
 public:
-    typedef std::complex<BT>                        body_type;
-    typedef BT                                      scalar_type;
-    typedef Eigen::Matrix< std::complex<BT>, N, N > matrix_type;
-
+    using body_type   = std::complex<BT>;
+    using scalar_type = BT;
+    using matrix_type = Eigen::Matrix<std::complex<BT>, N, N>;
 };
-
 }

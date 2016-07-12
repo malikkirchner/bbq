@@ -13,8 +13,6 @@
 ==========================================================================================
 *****************************************************************************************/
 
-
-
 //**************************************************************************************//
 //     Copyright (C) 2014 Malik Kirchner "malik.kirchner@gmx.net"                       //
 //                                                                                      //
@@ -46,14 +44,12 @@
 //                                                                                      //
 //**************************************************************************************//
 
-
 #pragma once
 
-#include <complex>
 #include <Eigen/Core>
+#include <complex>
 
 namespace math {
-
 
 /*!**************************************************************************************
  * @class  SU
@@ -62,19 +58,17 @@ namespace math {
  * SU(N) group element in NxN matrix representation.
  * http://en.wikipedia.org/wiki/Special_unitary_group
  ****************************************************************************************/
-template< typename BT, size_t N >
-class SU : public Eigen::Matrix< std::complex<BT>, N, N > {
+template <typename BT, std::size_t N> class SU : public Eigen::Matrix<std::complex<BT>, N, N> {
 public:
-    typedef std::complex<BT>                        body_type;
-    typedef BT                                      scalar_type;
-    typedef Eigen::Matrix< std::complex<BT>, N, N > matrix_type;
+    using body_type   = std::complex<BT>;
+    using scalar_type = BT;
+    using matrix_type = Eigen::Matrix<std::complex<BT>, N, N>;
 
-    constexpr BT norm2 () {
-        const Eigen::MatrixBase< matrix_type > mb(*this);
-        return (mb*(*this)).trace().real();
+    constexpr BT norm2() {
+        const Eigen::MatrixBase<matrix_type> mb(*this);
+        return (mb * (*this)).trace().real();
     }
 };
-
 
 /*!**************************************************************************************
  * @class  su
@@ -83,19 +77,15 @@ public:
  * su(N) algebra element in NxN matrix representation.
  * http://en.wikipedia.org/wiki/Special_unitary_group
  ****************************************************************************************/
-template< typename BT, size_t N >
-class su : public Eigen::Matrix< std::complex<BT>, N, N > {
+template <typename BT, std::size_t N> class su : public Eigen::Matrix<std::complex<BT>, N, N> {
 public:
-    typedef std::complex<BT>                        body_type;
-    typedef BT                                      scalar_type;
-    typedef Eigen::Matrix< std::complex<BT>, N, N > matrix_type;
+    using body_type   = std::complex<BT>;
+    using scalar_type = BT;
+    using matrix_type = Eigen::Matrix<std::complex<BT>, N, N>;
 
-    constexpr BT norm2 () {
-        const Eigen::MatrixBase< matrix_type > mb(*this);
-        return (mb*(*this)).trace().real();
+    constexpr BT norm2() {
+        const Eigen::MatrixBase<matrix_type> mb(*this);
+        return (mb * (*this)).trace().real();
     }
 };
-
-
-
 }

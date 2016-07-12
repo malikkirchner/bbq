@@ -13,8 +13,6 @@
 ==========================================================================================
 *****************************************************************************************/
 
-
-
 //**************************************************************************************//
 //     Copyright (C) 2014 Malik Kirchner "malik.kirchner@gmx.net"                       //
 //                                                                                      //
@@ -46,44 +44,40 @@
 //                                                                                      //
 //**************************************************************************************//
 
-
 #define BOOST_TEST_MAIN
 #define BOOST_TEST_MODULE "lattice-test"
 
 #include <boost/test/unit_test.hpp>
-#include <iostream>
 #include <chrono>
 #include <field/lattice.hpp>
+#include <iostream>
 
-
-
-#define LAT_ADDR(a,b,c,d,L) (((( (a%L+L)%L )*L+( (b%L+L)%L ))*L+( (c%L+L)%L ))*L+( (d%L+L)%L ))
+#define LAT_ADDR(a, b, c, d, L)                                                                    \
+    (((((a % L + L) % L) * L + ((b % L + L) % L)) * L + ((c % L + L) % L)) * L + ((d % L + L) % L))
 
 BOOST_AUTO_TEST_CASE(LatticePerformanceTest) {
     using namespace field;
 
-    Lattice<4> lat{{{32,32,32,32}}};
+    Lattice<4> lat{{{32, 32, 32, 32}}};
 
-    double  stl_mod;
-    double  fast_mod;
-    long x0 = 0;
-    long x1 = 0;
+    double stl_mod;
+    double fast_mod;
+    long   x0 = 0;
+    long   x1 = 0;
 
-    int L   = 32;
+    int L = 32;
     std::cout << "Type 32 and press enter! ";
-    std::cin  >> L;
+    std::cin >> L;
 
     {
         auto start = std::chrono::high_resolution_clock::now();
 
-        for ( long a = -32; a < 500*32; a++ )
-        for ( long b = -32; b < 32; b++ )
-        for ( long c = -32; c < 32; c++ )
-        for ( long d = -32; d < 32; d++ ) {
-            x0 += lat.addr_mod({{a,b,c,d}});
-        }
-        auto stop   = std::chrono::high_resolution_clock::now();
-        fast_mod    = std::chrono::duration_cast<std::chrono::milliseconds>(stop-start).count();
+        for (long a = -32; a < 500 * 32; a++)
+            for (long b = -32; b < 32; b++)
+                for (long c = -32; c < 32; c++)
+                    for (long d    = -32; d < 32; d++) { x0 += lat.addr_mod({{a, b, c, d}}); }
+        auto                  stop = std::chrono::high_resolution_clock::now();
+        fast_mod = std::chrono::duration_cast<std::chrono::milliseconds>(stop - start).count();
 
         std::cout << "fast_mod: " << fast_mod << std::endl;
     }
@@ -91,33 +85,30 @@ BOOST_AUTO_TEST_CASE(LatticePerformanceTest) {
     {
         auto start = std::chrono::high_resolution_clock::now();
 
-        for ( long a = -32; a < 500*32; a++ )
-        for ( long b = -32; b < 32; b++ )
-        for ( long c = -32; c < 32; c++ )
-        for ( long d = -32; d < 32; d++ ) {
-            x1 += LAT_ADDR(a,b,c,d,L);
-        }
-        auto stop   = std::chrono::high_resolution_clock::now();
-        stl_mod     = std::chrono::duration_cast<std::chrono::milliseconds>(stop-start).count();
+        for (long a = -32; a < 500 * 32; a++)
+            for (long b = -32; b < 32; b++)
+                for (long c = -32; c < 32; c++)
+                    for (long d    = -32; d < 32; d++) { x1 += LAT_ADDR(a, b, c, d, L); }
+        auto                  stop = std::chrono::high_resolution_clock::now();
+        stl_mod = std::chrono::duration_cast<std::chrono::milliseconds>(stop - start).count();
 
         std::cout << "stl_mod : " << stl_mod << std::endl;
     }
 
-    std::cout << "stl_mod/fast_mod : " << (double)stl_mod/(double)fast_mod << std::endl;
+    std::cout << "stl_mod/fast_mod : " << (double)stl_mod / (double)fast_mod << std::endl;
 
-    BOOST_CHECK_EQUAL( x0, x1 );
+    BOOST_CHECK_EQUAL(x0, x1);
 }
 
 BOOST_AUTO_TEST_CASE(LatticeTest) {
     using namespace field;
 
-    Lattice<4> lat{{{2,8,32,128}}};
+    Lattice<4> lat{{{2, 8, 32, 128}}};
 
-    const long a = lat.addr({{1,3,7,127}});
-    const long b = ((1*8+3)*32+7)*128+127;
-    const long c = lat.addr_mod({{1,3+8,7-32,127}});
+    const long a = lat.addr({{1, 3, 7, 127}});
+    const long b = ((1 * 8 + 3) * 32 + 7) * 128 + 127;
+    const long c = lat.addr_mod({{1, 3 + 8, 7 - 32, 127}});
 
-    BOOST_CHECK_EQUAL( a, b );
-    BOOST_CHECK_EQUAL( b, c );
+    BOOST_CHECK_EQUAL(a, b);
+    BOOST_CHECK_EQUAL(b, c);
 }
-

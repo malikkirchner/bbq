@@ -13,8 +13,6 @@
 ==========================================================================================
 *****************************************************************************************/
 
-
-
 //**************************************************************************************//
 //     Copyright (C) 2014 Malik Kirchner "malik.kirchner@gmx.net"                       //
 //                                                                                      //
@@ -46,14 +44,12 @@
 //                                                                                      //
 //**************************************************************************************//
 
-
 #pragma once
 
-#include <observables/observable.hpp>
 #include <field/neighbours.hpp>
+#include <observables/observable.hpp>
 
 namespace observable {
-
 
 /*!**************************************************************************************
  * @class  Observable
@@ -63,54 +59,52 @@ namespace observable {
  *
  * http://en.wikipedia.org/wiki/Wilson_loop
  ****************************************************************************************/
-template< typename Gauge, size_t W = 1u, size_t H = 1u >
+template <typename Gauge, std::size_t W = 1u, std::size_t H = 1u>
 class WilsonLoop : public Observable {
 public:
-    typedef Gauge                                           gauge_field;
-    typedef typename gauge_field::gauge_type                gauge_type;
-    typedef typename gauge_field::traits::lattice_type      lattice_type;
-    typedef typename gauge_field::traits::body_type         body_type;
-    typedef typename gauge_field::traits::periodicity       periodicity;
-    typedef field::Neighbours< lattice_type, periodicity::value > neighbours_type;
+    using gauge_field     = Gauge;
+    using gauge_type      = typename gauge_field::gauge_type;
+    using lattice_type    = typename gauge_field::traits::lattice_type;
+    using body_type       = typename gauge_field::traits::body_type;
+    using periodicity     = typename gauge_field::traits::periodicity;
+    using neighbours_type = field::Neighbours<lattice_type, periodicity::value>;
 
-    typedef std::integral_constant< size_t, W >     width;
-    typedef std::integral_constant< size_t, H >     height;
+    using width  = std::integral_constant<std::size_t, W>;
+    using height = std::integral_constant<std::size_t, H>;
 
 private:
-    static constexpr auto loop( const gauge_field& gauge, const neighbours_type& neighbours,
-                                const size_t x, const size_t mu, const size_t nu, std::true_type is_plaquette ) noexcept
-    {
-        return   gauge(            x        , nu ).adjoint()
-               * gauge( neighbours(x,nu).fwd, mu ).adjoint()
-               * gauge( neighbours(x,mu).fwd, nu )
-               * gauge(            x        , mu );
+    static constexpr auto loop(const gauge_field& gauge, const neighbours_type& neighbours,
+                               const std::size_t x, const std::size_t mu, const std::size_t nu,
+                               std::true_type is_plaquette) noexcept {
+        return gauge(x, nu).adjoint() * gauge(neighbours(x, nu).fwd, mu).adjoint() *
+               gauge(neighbours(x, mu).fwd, nu) * gauge(x, mu);
     }
 
-    static constexpr gauge_type loop( const gauge_field& gauge, const neighbours_type& neighbours,
-                                      const size_t x, const size_t mu, const size_t nu, std::false_type is_plaquette ) noexcept
-    {
+    static constexpr gauge_type loop(const gauge_field& gauge, const neighbours_type& neighbours,
+                                     const std::size_t x, const std::size_t mu,
+                                     const std::size_t nu, std::false_type is_plaquette) noexcept {
         gauge_type L;
         L.setIdentity();
 
-        size_t xx = x;
+        std::size_t xx = x;
 
-        for ( size_t w = 0; w < width::value; w++ ) {
-            L *= gauge( xx, mu );
+        for (std::size_t w = 0; w < width::value; w++) {
+            L *= gauge(xx, mu);
             xx = neighbours(xx, mu).fwd;
         }
 
-        for ( size_t h = 0; h < height::value; h++ ) {
-            L *= gauge( xx, nu );
+        for (std::size_t h = 0; h < height::value; h++) {
+            L *= gauge(xx, nu);
             xx = neighbours(xx, nu).fwd;
         }
 
-        for ( size_t w = 0; w < width::value; w++ ) {
-            L *= gauge( xx, mu ).adjoint();
+        for (std::size_t w = 0; w < width::value; w++) {
+            L *= gauge(xx, mu).adjoint();
             xx = neighbours(xx, mu).bwd;
         }
 
-        for ( size_t h = 0; h < height::value; h++ ) {
-            L *= gauge( xx, nu ).adjoint();
+        for (std::size_t h = 0; h < height::value; h++) {
+            L *= gauge(xx, nu).adjoint();
             xx = neighbours(xx, nu).bwd;
         }
 
@@ -118,28 +112,26 @@ private:
     }
 
 public:
-
-    static body_type eval( const gauge_field& gauge, const neighbours_type& neighbours ) noexcept {
+    static body_type eval(const gauge_field& gauge, const neighbours_type& neighbours) noexcept {
         const lattice_type lattice = gauge.lattice();
 
-        const size_t volume = lattice.volume();
-        const size_t dim    = lattice_type::lattice_dim::value;
+        const std::size_t volume = lattice.volume();
+        const std::size_t dim    = lattice_type::lattice_dim::value;
 
         gauge_type wl;
         wl.setZero();
 
-        typedef typename std::integral_constant<bool, (width::value==1u) && (height::value==1u) >::type is_plaquette;
+        using is_plaquette = typename std::integral_constant<bool, (width::value == 1u) &&
+                                                                       (height::value == 1u)>::type;
 
-        for ( size_t x = 0; x < volume; ++x ) {
-            for ( size_t mu = 0; mu < dim; ++mu )
-            for ( size_t nu = 0; nu < mu;  ++nu ) {
-                wl += loop( gauge, neighbours, x, mu, nu, is_plaquette() );
-            }
+        for (std::size_t x = 0; x < volume; ++x) {
+            for (std::size_t mu = 0; mu < dim; ++mu)
+                for (std::size_t nu = 0; nu < mu; ++nu) {
+                    wl += loop(gauge, neighbours, x, mu, nu, is_plaquette());
+                }
         }
 
         return wl.trace();
     }
-
 };
-
 }

@@ -13,8 +13,6 @@
 ==========================================================================================
 *****************************************************************************************/
 
-
-
 //**************************************************************************************//
 //     Copyright (C) 2014 Malik Kirchner "malik.kirchner@gmx.net"                       //
 //                                                                                      //
@@ -46,17 +44,15 @@
 //                                                                                      //
 //**************************************************************************************//
 
-
 #pragma once
 
 #include <type_traits>
 
 #include <field/neighbours.hpp>
-#include <operators/operator.hpp>
 #include <math/gamma.hpp>
+#include <operators/operator.hpp>
 
 namespace operators {
-
 
 /*!**************************************************************************************
  * @class  WilsonDirac
@@ -64,56 +60,57 @@ namespace operators {
  *
  * @brief  Wilson-Dirac operator.
  ****************************************************************************************/
-template< typename fermion_traits, typename gauge_traits >
-class WilsonDirac : public Operator< fermion_traits, gauge_traits > {
+template <typename fermion_traits, typename gauge_traits>
+class WilsonDirac : public Operator<fermion_traits, gauge_traits> {
 public:
-    typedef Operator< fermion_traits, gauge_traits >    base_type;
-    typedef typename base_type::body_type               body_type;
-    typedef typename base_type::scalar_type             scalar_type;
-    typedef typename base_type::fermion_field           fermion_field;
-    typedef typename base_type::gauge_field             gauge_field;
-    typedef typename base_type::lattice_type            lattice_type;
-    typedef typename fermion_traits::lattice_dim        lattice_dim;
+    using base_type     = Operator<fermion_traits, gauge_traits>;
+    using body_type     = typename base_type::body_type;
+    using scalar_type   = typename base_type::scalar_type;
+    using fermion_field = typename base_type::fermion_field;
+    using gauge_field   = typename base_type::gauge_field;
+    using lattice_type  = typename base_type::lattice_type;
+    using lattice_dim   = typename fermion_traits::lattice_dim;
 
 private:
-    const lattice_type  _lattice;
+    const lattice_type _lattice;
 
-    scalar_type         _mass;
-    scalar_type         _r;
+    scalar_type _mass;
+    scalar_type _r;
 
-    typedef typename fermion_traits::periodicity                periodicity;
-    const field::Neighbours<lattice_type, periodicity::value>   neighbours;
+    using periodicity = typename fermion_traits::periodicity;
+    const field::Neighbours<lattice_type, periodicity::value> neighbours;
 
     math::GammaMatrixGenerator<scalar_type, lattice_dim::value> gamma;
 
 public:
+    WilsonDirac(lattice_type lattice_)
+        : _lattice(lattice_)
+        , _mass(1.)
+        , _r(1.)
+        , neighbours(lattice_) {}
 
-    WilsonDirac( lattice_type lattice_ ) : _lattice(lattice_), _mass(1.), _r(1.), neighbours(lattice_) {
+    WilsonDirac(lattice_type lattice_, scalar_type m_, scalar_type r_)
+        : _lattice(lattice_)
+        , _mass(m_)
+        , _r(r_)
+        , neighbours(lattice_) {}
 
-    }
+    virtual fermion_field apply(const fermion_field& phi, const gauge_field& U) const final {
+        assert(phi.lattice() == _lattice);
+        assert(phi.lattice() == U.lattice());
 
-    WilsonDirac( lattice_type lattice_, scalar_type m_, scalar_type r_ ) : _lattice(lattice_), _mass(m_), _r(r_), neighbours(lattice_) {
+        const std::size_t volume = _lattice.volume();
+        const std::size_t dim    = _lattice.dim();
+        fermion_field     res(_lattice);
 
-    }
-
-    virtual fermion_field apply( const fermion_field& phi, const gauge_field& U ) const final {
-        assert( phi.lattice() == _lattice );
-        assert( phi.lattice() == U.lattice() );
-
-        const size_t  volume  = _lattice.volume();
-        const size_t  dim     = _lattice.dim();
-        fermion_field res( _lattice );
-
-        for ( size_t k = 0; k < volume; k++ ) {
-            res[k]  = phi[k];
-            res[k] *= (4.0*_r + _mass);
+        for (std::size_t k = 0; k < volume; k++) {
+            res[k] = phi[k];
+            res[k] *= (4.0 * _r + _mass);
         }
 
-        for ( size_t m = 0; m < volume; m++ ) {
-            for ( size_t n = 0; n < volume; n++ ) {
-                for ( size_t mu = 0; mu < dim; mu++ ) {
-
-                }
+        for (std::size_t m = 0; m < volume; m++) {
+            for (std::size_t n = 0; n < volume; n++) {
+                for (std::size_t mu = 0; mu < dim; mu++) {}
             }
         }
 
@@ -121,12 +118,11 @@ public:
     }
 
     scalar_type mass() const noexcept { return _mass; }
-    scalar_type r() const noexcept    { return _r; }
+    scalar_type r() const noexcept { return _r; }
 
-    void mass( const scalar_type other ) noexcept { _mass = other; }
-    void r( const scalar_type other ) noexcept    { _r    = other; }
+    void mass(const scalar_type other) noexcept { _mass = other; }
+    void r(const scalar_type other) noexcept { _r = other; }
 
     lattice_type lattice() const noexcept { return _lattice; }
 };
-
 }

@@ -13,8 +13,6 @@
 ==========================================================================================
 *****************************************************************************************/
 
-
-
 //**************************************************************************************//
 //     Copyright (C) 2014 Malik Kirchner "malik.kirchner@gmx.net"                       //
 //                                                                                      //
@@ -46,28 +44,24 @@
 //                                                                                      //
 //**************************************************************************************//
 
-
 #pragma once
 
-#include <complex>
 #include <Eigen/Core>
+#include <complex>
 #include <math/gamma.hpp>
-
 
 namespace math {
 
-    
-/*!**************************************************************************************    
+/*!**************************************************************************************
  * @class  Spinor
  * @author Malik Kirchner <malik.kirchner@gmx.net>
- * 
+ *
  * @brief  Color charged fermion field representation.
  ****************************************************************************************/
-template< typename BT, unsigned D, unsigned N >
-class Spinor : public Eigen::Matrix< std::complex<BT>, N, __spinor_dim(D) > {
+template <typename BT, unsigned D, unsigned N>
+class Spinor : public Eigen::Matrix<std::complex<BT>, N, __spinor_dim(D)> {
 public:
-    typedef std::complex<BT> body_type;
-    typedef BT               scalar_type;
+    using body_type   = std::complex<BT>;
+    using scalar_type = BT;
 };
-
 }

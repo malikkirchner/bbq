@@ -13,8 +13,6 @@
 ==========================================================================================
 *****************************************************************************************/
 
-
-
 //**************************************************************************************//
 //     Copyright (C) 2014 Malik Kirchner "malik.kirchner@gmx.net"                       //
 //                                                                                      //
@@ -46,41 +44,39 @@
 //                                                                                      //
 //**************************************************************************************//
 
-
 #pragma once
 
 namespace math {
 
-inline int mod ( const int idx, const int d ) noexcept {
-    const int dm1 = d-1;
-    int aux  = idx;
-        aux &= dm1;
-        aux += d;
-        aux &= dm1;
+inline int mod(const int idx, const int d) noexcept {
+    const int dm1 = d - 1;
+    int       aux = idx;
+    aux &= dm1;
+    aux += d;
+    aux &= dm1;
     return aux;
 }
 
-inline long mod ( const long idx, const long d ) noexcept {
-    const long dm1 = d-1;
-    long aux  = idx;
-         aux &= dm1;
-         aux += d;
-         aux &= dm1;
+inline long mod(const long idx, const long d) noexcept {
+    const long dm1 = d - 1;
+    long       aux = idx;
+    aux &= dm1;
+    aux += d;
+    aux &= dm1;
     return aux;
 }
 
-inline unsigned mod ( const unsigned  idx, const unsigned d ) noexcept {
-    unsigned aux  = idx;
-             aux &= d-1;
+inline unsigned mod(const unsigned idx, const unsigned d) noexcept {
+    unsigned aux = idx;
+    aux &= d - 1;
     return aux;
 }
 
-inline unsigned long mod ( const unsigned long idx, const unsigned long d ) noexcept {
-    unsigned long aux  = idx;
-                  aux &= d-1;
+inline unsigned long mod(const unsigned long idx, const unsigned long d) noexcept {
+    unsigned long aux = idx;
+    aux &= d - 1;
     return aux;
 }
-
 }
 
 /*
@@ -93,7 +89,8 @@ inline unsigned long mod ( const unsigned long idx, const unsigned long d ) noex
  * CLang 3.5.0
  * GCC   4.9.2
  *
- * CXX_FLAGS=-march=native -fomit-frame-pointer -pipe -Wall -pedantic -g0 -O2 -fpic -std=c++14 -DNDEBUG
+ * CXX_FLAGS=-march=native -fomit-frame-pointer -pipe -Wall -pedantic -g0 -O2
+ * -fpic -std=c++14 -DNDEBUG
  *
  *              |      GCC      |     CLang
  * -------------|---------------|---------------
@@ -101,4 +98,3 @@ inline unsigned long mod ( const unsigned long idx, const unsigned long d ) noex
  * stl  mod     |     91.4s     |     91.5s
  *
  */
-

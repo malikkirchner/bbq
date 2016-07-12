@@ -13,8 +13,6 @@
 ==========================================================================================
 *****************************************************************************************/
 
-
-
 //**************************************************************************************//
 //     Copyright (C) 2014 Malik Kirchner "malik.kirchner@gmx.net"                       //
 //                                                                                      //
@@ -46,110 +44,93 @@
 //                                                                                      //
 //**************************************************************************************//
 
-
 #pragma once
 
-#include <type_traits>
-#include <cstring>
 #include <cassert>
+#include <cstring>
+#include <type_traits>
 #include <util/memory.hpp>
 
-
 namespace field {
-    
-enum field_periodicity {
-    FP_PERIODIC = 1,
-    FP_ANTI_PERIODIC = 2,
-    FP_FINITE = 4
-};
-    
-template<class MatrixType, class LatticeType, bool IsLink, field_periodicity Periodicity>
+
+enum field_periodicity { FP_PERIODIC = 1, FP_ANTI_PERIODIC = 2, FP_FINITE = 4 };
+
+template <class MatrixType, class LatticeType, bool IsLink, field_periodicity Periodicity>
 struct field_traits {
-    typedef MatrixType                          matrix_type;
-    typedef LatticeType                         lattice_type;
-    typedef typename MatrixType::body_type      body_type;
-    typedef typename MatrixType::scalar_type    scalar_type;
-    typedef std::integral_constant< bool, IsLink >                    is_link;
-    typedef std::integral_constant< field_periodicity, Periodicity >  periodicity;
-    typedef typename LatticeType::lattice_dim                         lattice_dim;
+    using matrix_type  = MatrixType;
+    using lattice_type = LatticeType;
+    using body_type    = typename MatrixType::body_type;
+    using scalar_type  = typename MatrixType::scalar_type;
+    using is_link      = std::integral_constant<bool, IsLink>;
+    using periodicity  = std::integral_constant<field_periodicity, Periodicity>;
+    using lattice_dim  = typename LatticeType::lattice_dim;
 };
-    
-        
+
 /*!**************************************************************************************
  * @class  GaugeField
  * @author Malik Kirchner <malik.kirchner@gmx.net>
  *
  * @brief  Basic field over sites or links of a lattice.
  ****************************************************************************************/
-template< class Traits >
-class BaseField {
+template <class Traits> class BaseField {
 public:
-    typedef Traits                          traits;
-    typedef typename traits::matrix_type    matrix_type;
-    typedef typename traits::lattice_type   lattice_type;
-    
+    using traits       = Traits;
+    using matrix_type  = typename traits::matrix_type;
+    using lattice_type = typename traits::lattice_type;
+
 protected:
-    matrix_type*        _data;
-    const lattice_type  _lattice;
-    const size_t        _dim;
-    const size_t        _volume;
-    
+    matrix_type*       _data;
+    const lattice_type _lattice;
+    const std::size_t  _dim;
+    const std::size_t  _volume;
+
     void allocate() {
-        const size_t len = traits::is_link::value ? _dim*_volume : _volume;
-        _data = new matrix_type [ len ];
+        const std::size_t len = traits::is_link::value ? _dim * _volume : _volume;
+        _data                 = new matrix_type[len];
     }
 
-    void deallocate() {
-        safe_array_delete( _data );
+    void deallocate() { safe_array_delete(_data); }
+
+    void cloneData(typename traits::matrix_type* other) {
+        const std::size_t len = traits::is_link::value ? _dim * _volume : _volume;
+        for (std::size_t k = 0; k < len; k++) _data[k] = other[k];
     }
 
-    void cloneData( typename traits::matrix_type *other ) {
-        const size_t len = traits::is_link::value ? _dim*_volume : _volume;
-        for ( size_t k = 0; k < len; k++ ) _data[k] = other[k];
-    }
-
-public:    
-    
-    BaseField( lattice_type lattice ) :
-        _data( NULL ), _lattice( lattice ),
-        _dim( _lattice.dim() ), _volume( _lattice.volume() )
-    {
+public:
+    BaseField(lattice_type lattice)
+        : _data(nullptr)
+        , _lattice(lattice)
+        , _dim(_lattice.dim())
+        , _volume(_lattice.volume()) {
         allocate();
     }
-    
-    BaseField( const BaseField& other ) :
-        _data( NULL ), _lattice( other._lattice ),
-        _dim( _lattice.dim() ), _volume( _lattice.volume() )
-    {
+
+    BaseField(const BaseField& other)
+        : _data(nullptr)
+        , _lattice(other._lattice)
+        , _dim(_lattice.dim())
+        , _volume(_lattice.volume()) {
         allocate();
-        cloneData( other._data );
+        cloneData(other._data);
     }
 
-    BaseField& operator = ( const BaseField& other ) {
-        assert( _lattice == other._lattice );
+    BaseField& operator=(const BaseField& other) {
+        assert(_lattice == other._lattice);
 
-        if ( !_data ) allocate();
-        cloneData( other._data );
+        if (!_data) allocate();
+        cloneData(other._data);
 
         return *this;
     }
 
-    inline matrix_type& operator[] ( const size_t k ) noexcept {
-        return _data[k];
-    }
+    inline matrix_type& operator[](const std::size_t k) noexcept { return _data[k]; }
 
-    inline matrix_type const & operator[] ( const size_t k ) const noexcept {
-        return _data[k];
-    }
+    inline matrix_type const& operator[](const std::size_t k) const noexcept { return _data[k]; }
 
+    virtual ~BaseField() { deallocate(); }
 
-    virtual ~BaseField() {
-        deallocate();
-    }
-    
-    constexpr long dim()    const noexcept { return _dim; }
-    constexpr long volume() const noexcept { return _volume; }
-    constexpr lattice_type const & lattice() const noexcept { return _lattice; }
+    constexpr long                dim() const noexcept { return _dim; }
+    constexpr long                volume() const noexcept { return _volume; }
+    constexpr lattice_type const& lattice() const noexcept { return _lattice; }
 };
-    
 }

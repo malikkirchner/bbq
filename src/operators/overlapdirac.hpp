@@ -13,8 +13,6 @@
 ==========================================================================================
 *****************************************************************************************/
 
-
-
 //**************************************************************************************//
 //     Copyright (C) 2014 Malik Kirchner "malik.kirchner@gmx.net"                       //
 //                                                                                      //
@@ -46,13 +44,11 @@
 //                                                                                      //
 //**************************************************************************************//
 
-
 #pragma once
 
 #include <operators/wilsondirac.hpp>
 
 namespace operators {
-
 
 /*!**************************************************************************************
  * @class  OverlapDirac
@@ -60,29 +56,23 @@ namespace operators {
  *
  * @brief  Overlap-Dirac operator.
  ****************************************************************************************/
-template< typename fermion_traits, typename gauge_traits >
-class OverlapDirac : public Operator {
+template <typename fermion_traits, typename gauge_traits> class OverlapDirac : public Operator {
 public:
-    typedef typename Operator< fermion_traits, gauge_traits >::body_type     body_type;
-    typedef typename Operator< fermion_traits, gauge_traits >::scalar_type   scalar_type;
-    typedef typename Operator< fermion_traits, gauge_traits >::fermion_field fermion_field;
-    typedef typename Operator< fermion_traits, gauge_traits >::gauge_field   gauge_field;
-    typedef typename Operator< fermion_traits, gauge_traits >::gauge_field   gauge_field;
-    typedef WilsonDirac< fermion_traits, gauge_traits >                      base_operator;
+    using body_type     = typename Operator<fermion_traits, gauge_traits>::body_type;
+    using scalar_type   = typename Operator<fermion_traits, gauge_traits>::scalar_type;
+    using fermion_field = typename Operator<fermion_traits, gauge_traits>::fermion_field;
+    using gauge_field   = typename Operator<fermion_traits, gauge_traits>::gauge_field;
+    using gauge_field   = typename Operator<fermion_traits, gauge_traits>::gauge_field;
+    using base_operator = WilsonDirac<fermion_traits, gauge_traits>;
 
 private:
     base_operator _baseOperator;
 
 public:
-
-    virtual fermion_field apply( const fermion_field& phi, const gauge_field& U ) const final {
-        fermion_field res( phi );
-
-
+    virtual fermion_field apply(const fermion_field& phi, const gauge_field& U) const final {
+        fermion_field res(phi);
 
         return res;
     }
-
 };
-
 }

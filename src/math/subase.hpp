@@ -13,8 +13,6 @@
 ==========================================================================================
 *****************************************************************************************/
 
-
-
 //**************************************************************************************//
 //     Copyright (C) 2014 Malik Kirchner "malik.kirchner@gmx.net"                       //
 //                                                                                      //
@@ -46,15 +44,11 @@
 //                                                                                      //
 //**************************************************************************************//
 
-
 #pragma once
-
 
 #include <math/su.hpp>
 
 namespace math {
-
-
 
 /*!**************************************************************************************
  *
@@ -70,90 +64,83 @@ namespace math {
  * http://en.wikipedia.org/wiki/Generalizations_of_Pauli_matrices
  *
  ****************************************************************************************/
-template< typename BT, size_t N >
-class suBase {
+template <typename BT, std::size_t N> class suBase {
 protected:
-
-    constexpr size_t addr( const size_t m, const size_t n ) const noexcept {
-        return N*m+n;
+    constexpr std::size_t addr(const std::size_t m, const std::size_t n) const noexcept {
+        return N * m + n;
     }
 
 public:
-    typedef typename su<BT,N>::body_type body_type;
+    using body_type = typename su<BT, N>::body_type;
 
-    BT          traces  [N*N];
-    su<BT,N>    base    [N*N];
-    struct Coefficients { BT c[N*N]; };
+    BT traces[N * N];
+    su<BT, N> base[N * N];
+    struct Coefficients {
+        BT c[N * N];
+    };
 
     suBase() {
         // construct a base in a su(N) (eg. Gell-Mann Matrices for su(3))
-        for (size_t k = 0; k < N; k++) {
-            for (size_t j = 0; j < N; j++) {
-                if ( k < j ) {
-                    base[addr(k,j)].setZero();
-                    base[addr(k,j)](k,j) = body_type(1.0,0.0);
-                    base[addr(k,j)](j,k) = body_type(1.0,0.0);
+        for (std::size_t k = 0; k < N; k++) {
+            for (std::size_t j = 0; j < N; j++) {
+                if (k < j) {
+                    base[addr(k, j)].setZero();
+                    base[addr(k, j)](k, j) = body_type(1.0, 0.0);
+                    base[addr(k, j)](j, k) = body_type(1.0, 0.0);
                 }
 
-                if ( k == j ) {
-                    if ( k == 0 ) {
-                        base[addr(k,j)].setZero();
-                        for ( size_t zz = 0; zz < N; zz++)
-                            base[addr(k,k)](zz,zz) = body_type(1.0,0.0);
-                    } else if ( k > 0 ) {
-                        base[addr(k,j)].setZero();
-                        for ( size_t zz = 0; zz < k; zz++)
-                            base[addr(k,k)](zz,zz) = sqrt(2.0/(BT)(k*(k+1)))*body_type(1.0,0.0);
-                        base[addr(k,k)](k,k)       = sqrt(2.0/(BT)(k*(k+1)))*body_type(-(BT)k,0.0);
+                if (k == j) {
+                    if (k == 0) {
+                        base[addr(k, j)].setZero();
+                        for (std::size_t zz = 0; zz < N; zz++)
+                            base[addr(k, k)](zz, zz) = body_type(1.0, 0.0);
+                    } else if (k > 0) {
+                        base[addr(k, j)].setZero();
+                        for (std::size_t zz = 0; zz < k; zz++)
+                            base[addr(k, k)](zz, zz) =
+                                std::sqrt(2.0 / (BT)(k * (k + 1))) * body_type(1.0, 0.0);
+                        base[addr(k, k)](k, k) =
+                            std::sqrt(2.0 / (BT)(k * (k + 1))) * body_type(-(BT)k, 0.0);
                     }
                 }
 
-                if ( k > j ) {
-                    base[addr(k,j)].setZero();
-                    base[addr(k,j)](k,j) = body_type(0.0,+1.0);
-                    base[addr(k,j)](j,k) = body_type(0.0,-1.0);
+                if (k > j) {
+                    base[addr(k, j)].setZero();
+                    base[addr(k, j)](k, j) = body_type(0.0, +1.0);
+                    base[addr(k, j)](j, k) = body_type(0.0, -1.0);
                 }
             }
         }
 
-        // pre-calc traces of squared base matrices for normalization in project() ...
-        for (size_t k = 0; k<N*N; k++) {
-            traces[k] = base[k].norm2();
-        }
+        // pre-calc traces of squared base matrices for normalization in
+        // project() ...
+        for (std::size_t k = 0; k < N * N; k++) { traces[k] = base[k].norm2(); }
     }
 
+    const Coefficients project(const su<BT, N>& rhs) const {
+        su<BT, N> buf;
+        Coefficients coeff;
+        BT           aux = 1.0;
 
-    const Coefficients project(const su< BT, N >& rhs) const {
-        su< BT, N >     buf;
-        Coefficients    coeff;
-        BT              aux     = 1.0;
-
-        for (size_t k = 0; k < N*N; k++) {
+        for (std::size_t k = 0; k < N * N; k++) {
             // multiply
-            buf = rhs*base[k];
+            buf = rhs * base[k];
             // trace
-            aux = 2.0/traces[k];
+            aux        = 2.0 / traces[k];
             coeff.c[k] = 0.0;
-            for (size_t j = 0; j < N; j++)
-                coeff.c[k] += aux*buf(j,j).imag();
+            for (std::size_t j = 0; j < N; j++) coeff.c[k] += aux * buf(j, j).imag();
         }
 
         return coeff;
     }
 
-    const su< BT, N > span(const Coefficients& rhs) const {
-        su< BT, N > buf;
+    const su<BT, N> span(const Coefficients& rhs) const {
+        su<BT, N> buf;
         buf.setZero();
         // span
-        const body_type I = body_type(0.0,5.0);
-        for (size_t k = 0; k < N*N; k++) {
-            buf += I*rhs.c[k]*base[k];
-        }
+        const body_type I = body_type(0.0, 5.0);
+        for (std::size_t k = 0; k < N * N; k++) { buf += I * rhs.c[k] * base[k]; }
         return buf;
     }
-
 };
-
-
-
 }

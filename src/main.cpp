@@ -13,8 +13,6 @@
 ==========================================================================================
 *****************************************************************************************/
 
-
-
 //**************************************************************************************//
 //     Copyright (C) 2014 Malik Kirchner "malik.kirchner@gmx.net"                       //
 //                                                                                      //
@@ -46,53 +44,53 @@
 //                                                                                      //
 //**************************************************************************************//
 
-
-#include <iostream>
-#include <field/lattice.hpp>
-#include <field/gaugefield.hpp>
 #include <field/fermionfield.hpp>
+#include <field/gaugefield.hpp>
+#include <field/lattice.hpp>
+#include <iostream>
 #include <math/spinor.hpp>
 #include <math/su.hpp>
 #include <math/subase.hpp>
 #include <math/sufactory.hpp>
-#include <operators/wilsondirac.hpp>
 #include <observables/wilsonloop.hpp>
+#include <operators/wilsondirac.hpp>
 
 /*!**************************************************************************************
  * @author Malik Kirchner <malik.kirchner@gmx.net>
  *
  ****************************************************************************************/
-int main ( int argc, char** argv ) {
+int main(int argc, char** argv) {
     int EXIT_CODE = 0;
 
-    field::Lattice<4> lattice{{{2,2,2,2}}};
+    field::Lattice<4> lattice{{{2, 2, 2, 2}}};
 
-    typedef field::Lattice<4>           lattice_type;
-    typedef math::Spinor<double, 4, 3>  spinor_type;
-    typedef math::SU<double, 3>         gauge_type;
-    typedef field::periodic_fermion_field_traits< spinor_type, lattice_type >   fermion_traits;
-    typedef field::periodic_gauge_field_traits< gauge_type, lattice_type >      gauge_traits;
-    typedef field::GaugeField< gauge_traits >       gauge_field;
-    typedef field::FermionField< fermion_traits >   fermion_field;
+    using lattice_type   = field::Lattice<4>;
+    using spinor_type    = math::Spinor<double, 4, 3>;
+    using gauge_type     = math::SU<double, 3>;
+    using fermion_traits = field::periodic_fermion_field_traits<spinor_type, lattice_type>;
+    using gauge_traits   = field::periodic_gauge_field_traits<gauge_type, lattice_type>;
+    using gauge_field    = field::GaugeField<gauge_traits>;
+    using fermion_field  = field::FermionField<fermion_traits>;
 
-    math::SUFactory< double, 3 > suFactory;
+    math::SUFactory<double, 3> suFactory;
 
+    fermion_field phi(lattice);
+    gauge_field   U(lattice);
 
-    fermion_field   phi(lattice);
-    gauge_field     U(lattice);
-
-    for ( size_t k = 0; k < U.numLinks(); k++ ) {
+    for (std::size_t k = 0; k < U.numLinks(); k++) {
         U[k] = suFactory.generateRandom();
         std::cout << U[k] << std::endl;
     }
 
-    operators::WilsonDirac< fermion_traits, gauge_traits > wilson(lattice);
-    phi = wilson.apply( phi, U );
+    operators::WilsonDirac<fermion_traits, gauge_traits> wilson(lattice);
+    phi = wilson.apply(phi, U);
 
-    field::Neighbours< gauge_traits::lattice_type, gauge_traits::periodicity::value > neighbours( lattice );
-    std::cout << "plaquette = " << observable::WilsonLoop<gauge_field>::eval( U, neighbours ) << std::endl;
+    field::Neighbours<gauge_traits::lattice_type, gauge_traits::periodicity::value> neighbours(
+        lattice);
+    std::cout << "plaquette = " << observable::WilsonLoop<gauge_field>::eval(U, neighbours)
+              << std::endl;
 
-//    gamma.print();
+    //    gamma.print();
 
     return EXIT_CODE;
 }

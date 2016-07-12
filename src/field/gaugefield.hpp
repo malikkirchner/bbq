@@ -13,8 +13,6 @@
 ==========================================================================================
 *****************************************************************************************/
 
-
-
 //**************************************************************************************//
 //     Copyright (C) 2014 Malik Kirchner "malik.kirchner@gmx.net"                       //
 //                                                                                      //
@@ -46,28 +44,26 @@
 //                                                                                      //
 //**************************************************************************************//
 
-
 #pragma once
-
 
 #include <field/basefield.hpp>
 #include <math/sufactory.hpp>
 
 namespace field {
 
+template <class MatrixType, class LatticeType, field_periodicity Periodicity>
+struct gauge_field_traits : public field_traits<MatrixType, LatticeType, true, Periodicity> {};
 
-template< class MatrixType, class LatticeType, field_periodicity Periodicity >
-struct gauge_field_traits : public field_traits< MatrixType, LatticeType, true, Periodicity >{};
+template <class MatrixType, class LatticeType>
+struct periodic_gauge_field_traits
+    : public gauge_field_traits<MatrixType, LatticeType, FP_PERIODIC> {};
 
-template< class MatrixType, class LatticeType >
-struct periodic_gauge_field_traits : public gauge_field_traits< MatrixType, LatticeType, FP_PERIODIC >{};
+template <class MatrixType, class LatticeType>
+struct anti_periodic_gauge_field_traits
+    : public gauge_field_traits<MatrixType, LatticeType, FP_ANTI_PERIODIC> {};
 
-template< class MatrixType, class LatticeType >
-struct anti_periodic_gauge_field_traits : public gauge_field_traits< MatrixType, LatticeType, FP_ANTI_PERIODIC >{};
-
-template< class MatrixType, class LatticeType >
-struct finite_gauge_field_traits : public gauge_field_traits< MatrixType, LatticeType, FP_FINITE >{};
-
+template <class MatrixType, class LatticeType>
+struct finite_gauge_field_traits : public gauge_field_traits<MatrixType, LatticeType, FP_FINITE> {};
 
 /*!**************************************************************************************
  * @class  GaugeField
@@ -75,41 +71,30 @@ struct finite_gauge_field_traits : public gauge_field_traits< MatrixType, Lattic
  *
  * @brief  Gauge field over lattice links.
  ****************************************************************************************/
-template< class Traits >
-class GaugeField : public BaseField< Traits > {
+template <class Traits> class GaugeField : public BaseField<Traits> {
 public:
-    typedef BaseField< Traits >           base_type;
-    typedef Traits                        traits;
-    typedef typename traits::matrix_type  gauge_type;
-    typedef typename traits::lattice_type lattice_type;
+    using base_type    = BaseField<Traits>;
+    using traits       = Traits;
+    using gauge_type   = typename traits::matrix_type;
+    using lattice_type = typename traits::lattice_type;
 
 private:
-
 protected:
-
 public:
+    GaugeField(const lattice_type& lattice)
+        : base_type(lattice) {}
 
-    GaugeField( const lattice_type& lattice ) : base_type( lattice )
-    {
+    GaugeField(const GaugeField& other)
+        : base_type(other) {}
 
+    inline gauge_type& operator()(const std::size_t x, const std::size_t mu) noexcept {
+        return base_type::operator[](x * 4 + mu);
     }
 
-    GaugeField( const GaugeField& other ) : base_type( other )
-    {
-
+    inline gauge_type const& operator()(const std::size_t x, const std::size_t mu) const noexcept {
+        return base_type::operator[](x * 4 + mu);
     }
 
-    inline gauge_type& operator()( const size_t x, const size_t mu  ) noexcept {
-        return base_type::operator []( x*4+mu );
-    }
-
-    inline gauge_type const & operator()( const size_t x, const size_t mu  ) const noexcept {
-        return base_type::operator []( x*4+mu );
-    }
-
-    inline size_t numLinks() const noexcept {
-        return base_type::_volume*base_type::_dim;
-    }
+    inline std::size_t numLinks() const noexcept { return base_type::_volume * base_type::_dim; }
 };
-
 }
