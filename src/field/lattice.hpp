@@ -121,6 +121,7 @@ public:
             res = math::mod(idx[0], static_cast<long>(_dimension[0]));
 
             for (std::size_t k = 1; k < D; k++) {
+                // TODO remove 'brackets' to use associativity of sum for auto parallelization
                 res *= _dimension[k];
                 res += math::mod(idx[k], static_cast<long>(_dimension[k]));
             }
@@ -130,6 +131,7 @@ public:
             res = ((idx[0] % _dimension[0]) + _dimension[0]) % _dimension[0];
 
             for (std::size_t k = 1; k < D; k++) {
+                // TODO check if modulo subtraction + comparison is faster
                 res *= _dimension[k];
                 res += ((idx[k] % _dimension[k]) + _dimension[k]) % _dimension[k];
             }
